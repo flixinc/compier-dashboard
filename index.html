@@ -91,6 +91,23 @@
   .api-save-btn:hover { background: var(--orange-dim); }
   .api-status { font-size: 11px; color: var(--green); white-space: nowrap; }
   .api-status.missing { color: var(--red); }
+  .api-banner.collapsed { display: none; }
+  .api-toggle {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 20px;
+    background: rgba(232,97,26,0.05);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    user-select: none;
+  }
+  .api-toggle:hover { color: var(--orange); }
+  .api-toggle.visible { display: flex; }
+  .api-toggle-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
   .toolbar {
     padding: 14px 20px;
@@ -389,7 +406,7 @@
   <div class="logo">
     <div class="logo-bar"></div>
     <div>
-      <div class="logo-text">COMPIER O&amp;A</div>
+      <div class="logo-text">COMPIER</div>
       <div class="logo-sub">Projecten</div>
     </div>
   </div>
@@ -409,6 +426,11 @@
   <input type="password" id="sb-key-input" placeholder="eyJ…" autocomplete="off">
   <button class="api-save-btn" onclick="saveApiKey()">Opslaan</button>
   <span class="api-status missing" id="api-status">Niet ingesteld</span>
+</div>
+
+<div class="api-toggle" id="api-toggle" onclick="toggleApiBanner()">
+  <div class="api-toggle-dot"></div>
+  <span>API ingesteld &mdash; klik om te wijzigen</span>
 </div>
 
 <div class="toolbar">
@@ -593,6 +615,7 @@ function initApiKey() {
   if (sbUrl)  document.getElementById('sb-url-input').value = sbUrl;
   if (sbKey)  document.getElementById('sb-key-input').value = sbKey;
   updateApiStatus();
+  collapseBannerIfComplete();
 }
 
 function updateApiStatus() {
@@ -600,6 +623,20 @@ function updateApiStatus() {
   if (apiKey && sbUrl && sbKey) { s.textContent = '✓ Alles ingesteld'; s.className = 'api-status'; }
   else if (apiKey) { s.textContent = '⚠ Supabase ontbreekt'; s.className = 'api-status missing'; }
   else { s.textContent = 'Niet ingesteld'; s.className = 'api-status missing'; }
+}
+
+function collapseBannerIfComplete() {
+  if (apiKey && sbUrl && sbKey) {
+    document.querySelector('.api-banner').classList.add('collapsed');
+    document.getElementById('api-toggle').classList.add('visible');
+  }
+}
+
+function toggleApiBanner() {
+  const banner = document.querySelector('.api-banner');
+  const toggle = document.getElementById('api-toggle');
+  banner.classList.remove('collapsed');
+  toggle.classList.remove('visible');
 }
 
 function saveApiKey() {
@@ -610,6 +647,7 @@ function saveApiKey() {
   localStorage.setItem('compier_sb_url', sbUrl);
   localStorage.setItem('compier_sb_key', sbKey);
   updateApiStatus();
+  collapseBannerIfComplete();
   if (sbUrl && sbKey) laadProjecten();
 }
 
@@ -642,7 +680,7 @@ async function uitLezenBon() {
 Velden:
 - nummer: kenmerk of referentienummer (bijv. "M2603 0024"), of leeg als niet aanwezig
 - adres: volledig werklocatie-adres (straat + huisnummer + postcode + plaats)
-- opdrachtgever: de overkoepelende organisatie (niet de afdeling) van de persoon die de brief ondertekent met 'Met vriendelijke groet' of vergelijkbare afsluiting. Gebruik de organisatienaam, niet een afdeling zoals 'Servicedesk Facilitair'.
+- opdrachtgever: de organisatie die de opdracht verleent aan Compier. Dit is NOOIT Compier zelf. Kijk naar de afzender, de ondertekening of de organisatienaam bij het adres van de opdrachtgever. Gebruik de overkoepelende naam, niet een afdeling zoals 'Servicedesk Facilitair'.
 - contact: de naam die onder "Met vriendelijke groet" staat (de ondertekenaar) plus diens telefoonnummer, formaat "Naam — telefoonnummer"
 - aanmelder: de contactpersoon op de werklocatie (bijv. vermeld als "Naam aanmelder" of "contactpersoon ter plaatse"), formaat "Naam — telefoonnummer"
 - omschrijving: korte omschrijving van de werkzaamheden of gevraagde offerte, max 120 tekens
