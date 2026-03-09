@@ -58,6 +58,44 @@
   .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
   .stat.active .stat-label { color: var(--orange); }
 
+  /* Opslag Knop */
+  .wr-btn {
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(232,97,26,0.08); border: 1px solid rgba(232,97,26,0.25);
+    border-radius: 5px; padding: 4px 10px; cursor: pointer;
+    transition: all 0.15s; color: var(--text);
+  }
+  .wr-btn:hover { background: rgba(232,97,26,0.18); border-color: var(--orange); }
+  .wr-btn.active { background: rgba(232,97,26,0.2); border-color: var(--orange); }
+  .wr-btn-title { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--orange); line-height: 1.2; }
+  .wr-btn-sub { font-size: 9px; color: var(--muted); text-transform: lowercase; letter-spacing: 0.04em; }
+
+  /* Opslag Panel */
+  .wr-panel { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px; }
+  .wr-inner { max-width: 480px; }
+  .wr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .wr-title { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--orange); text-transform: uppercase; letter-spacing: 0.05em; }
+  .wr-subtitle { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .wr-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0; line-height: 1; }
+  .wr-close:hover { color: var(--text); }
+  .wr-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 5px; }
+  .wr-input { width: 200px; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 7px 10px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; outline: none; transition: border-color 0.15s; }
+  .wr-input:focus { border-color: var(--orange); }
+  .wr-input-row { margin-bottom: 16px; }
+  .wr-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+  .wr-table th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 4px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  .wr-table td { padding: 8px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .wr-omschrijving { font-size: 13px; color: var(--text); }
+  .wr-pct { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); width: 40px; }
+  .wr-val { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; color: var(--orange); width: 100px; }
+  .wr-copy-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 3px; padding: 3px 7px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+  .wr-copy-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .wr-copy-all-wrap { display: flex; align-items: center; gap: 12px; }
+  .wr-copy-all { background: rgba(232,97,26,0.1); border: 1px solid rgba(232,97,26,0.3); color: var(--orange); padding: 7px 14px; border-radius: 4px; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+  .wr-copy-all:hover { background: rgba(232,97,26,0.2); }
+  .wr-copied-msg { font-size: 11px; color: var(--green); opacity: 0; transition: opacity 0.3s; }
+  .wr-copied-msg.show { opacity: 1; }
+
   .api-banner {
     background: rgba(232,97,26,0.08);
     border-bottom: 1px solid rgba(232,97,26,0.2);
@@ -128,7 +166,7 @@
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 8px 12px;
+    padding: 8px 30px 8px 12px;
     border-radius: 4px;
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 13px;
@@ -136,6 +174,13 @@
     transition: border-color 0.2s;
   }
   .search-wrap input:focus { border-color: var(--orange); }
+  .search-clear {
+    display: none;
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 16px; line-height: 1; padding: 0;
+  }
+  .search-clear:hover { color: var(--text); }
   .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
 
   .filter-btns { display: flex; gap: 5px; flex-wrap: wrap; }
@@ -231,8 +276,6 @@
   .s-lopend .status-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
   .s-wacht      { background: rgba(212,160,23,0.15); color: var(--yellow); }
   .s-wacht .status-dot { background: var(--yellow); }
-  .s-oplevering { background: rgba(142,107,191,0.15); color: var(--purple); }
-  .s-oplevering .status-dot { background: var(--purple); }
   .s-klaar      { background: rgba(102,102,102,0.15); color: var(--muted); }
   .s-klaar .status-dot { background: var(--muted); }
 
@@ -241,7 +284,27 @@
   .actie-date.urgent { color: var(--red); }
   .actie-date.soon   { color: var(--yellow); }
 
-  .actie-log {
+  .actie-chips {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+  }
+  .actie-chip {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 20px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .actie-chip:hover { border-color: var(--orange); color: var(--orange); background: rgba(232,97,26,0.07); }
+  .actie-chip.selected { border-color: var(--orange); color: var(--orange); background: rgba(232,97,26,0.12); }
+  .chip-wacht { border-color: rgba(74,144,217,0.3); color: var(--blue); }
+  .chip-wacht:hover { border-color: var(--blue); color: var(--blue); background: rgba(74,144,217,0.07); }
+  .chip-wacht.selected { border-color: var(--blue); color: var(--blue); background: rgba(74,144,217,0.15); }
+  .chips-label { width: 100%; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
     margin-top: 14px;
     border-top: 1px solid var(--border);
     padding-top: 12px;
@@ -284,6 +347,12 @@
     to   { transform: translateY(0); opacity: 1; }
   }
   .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 18px; }
+  .modal-logo {
+    display: flex; justify-content: flex-end; margin-bottom: 12px;
+  }
+  .modal-logo img {
+    height: 28px; width: auto; opacity: 0.85; filter: brightness(0) invert(1);
+  }
   .modal-title { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--orange); margin-bottom: 16px; letter-spacing: 0.05em; }
 
   .upload-zone {
@@ -428,12 +497,18 @@
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-bar"></div>
-    <div>
-      <div class="logo-text">COMPIER</div>
-      <div class="logo-sub">Projecten</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="logo">
+      <div class="logo-bar"></div>
+      <div>
+        <div class="logo-text">COMPIER</div>
+        <div class="logo-sub">Projecten</div>
+      </div>
     </div>
+    <button class="wr-btn" onclick="toggleWR()" title="Winst & Risico berekening">
+      <span class="wr-btn-title">OPSLAG</span>
+      <span class="wr-btn-sub">berekening</span>
+    </button>
   </div>
   <div class="header-stats">
     <div class="stat" id="stat-lopend-wrap" onclick="setStatFilter('lopend')" title="Filter: Lopend"><div class="stat-num" id="stat-lopend">0</div><div class="stat-label">Lopend</div></div>
@@ -441,6 +516,51 @@
     <div class="stat" id="stat-totaal-wrap" onclick="setStatFilter('alle')" title="Filter: Alle"><div class="stat-num" id="stat-totaal">0</div><div class="stat-label">Actief</div></div>
   </div>
 </header>
+
+<!-- Opslag Berekening Panel -->
+<div id="wr-panel" class="wr-panel" style="display:none">
+  <div class="wr-inner">
+    <div class="wr-header">
+      <div>
+        <div class="wr-title">Winst &amp; Risico</div>
+        <div class="wr-subtitle">Voer bedrag exclusief BTW in</div>
+      </div>
+      <button class="wr-close" onclick="toggleWR()">✕</button>
+    </div>
+    <div class="wr-input-row">
+      <label class="wr-label">Bedrag excl. BTW (€)</label>
+      <input type="number" id="wr-bedrag" class="wr-input" placeholder="0,00" oninput="berekenWR()" min="0" step="0.01">
+    </div>
+    <table class="wr-table" id="wr-table">
+      <thead>
+        <tr>
+          <th>Omschrijving</th>
+          <th>%</th>
+          <th>Bedrag</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="wr-omschrijving">Algemene kosten</td>
+          <td class="wr-pct">10%</td>
+          <td class="wr-val" id="wr-ak">—</td>
+          <td><button class="wr-copy-btn" onclick="kopieelRij('Algemene kosten', 10)" title="Kopieer regel">⎘</button></td>
+        </tr>
+        <tr>
+          <td class="wr-omschrijving">Winst &amp; Risico</td>
+          <td class="wr-pct">5%</td>
+          <td class="wr-val" id="wr-wr">—</td>
+          <td><button class="wr-copy-btn" onclick="kopieelRij('Winst & Risico', 5)" title="Kopieer regel">⎘</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="wr-copy-all-wrap">
+      <button class="wr-copy-all" onclick="kopieelAlles()">Kopieer beide regels</button>
+      <span class="wr-copied-msg" id="wr-copied"></span>
+    </div>
+  </div>
+</div>
 
 <div class="api-banner">
   <label>Claude</label>
@@ -461,13 +581,13 @@
 <div class="toolbar">
   <div class="search-wrap">
     <input type="text" id="search" placeholder="Zoek nummer, adres, opdrachtgever…">
+    <button class="search-clear" id="search-clear" onclick="clearSearch()" title="Wissen">✕</button>
   </div>
   <div class="filter-btns">
     <button class="filter-btn active" data-filter="alle">Alle</button>
     <button class="filter-btn" data-filter="offerte">Offerte</button>
     <button class="filter-btn" data-filter="lopend">Lopend</button>
     <button class="filter-btn" data-filter="wacht">Wacht</button>
-    <button class="filter-btn" data-filter="oplevering">Oplevering</button>
     <button class="filter-btn" data-filter="klaar">Klaar</button>
   </div>
   <button class="btn-add" onclick="openModal()">+ Nieuw</button>
@@ -495,6 +615,7 @@
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-handle"></div>
+    <div class="modal-logo" id="modal-logo" style="display:none"><img id="modal-logo-img" src="" alt=""></div>
     <div class="modal-title" id="modal-title">NIEUWE OPDRACHT</div>
 
     <div id="upload-section">
@@ -518,7 +639,6 @@
           <option value="offerte">Offerte</option>
           <option value="lopend" selected>Lopend</option>
           <option value="wacht">Wacht op materiaal</option>
-          <option value="oplevering">Oplevering</option>
           <option value="klaar">Klaar</option>
         </select>
       </div>
@@ -532,11 +652,11 @@
       </div>
       <div class="form-group full">
         <label>Opdrachtgever contact (ondertekenaar)</label>
-        <input type="text" id="f-contact" placeholder="bijv. Joyce Bosman — 06 53623112">
+        <input type="text" id="f-contact" placeholder="bijv. J. Jansen — 06 12345678">
       </div>
       <div class="form-group full">
         <label>Aanmelder op locatie</label>
-        <input type="text" id="f-aanmelder" placeholder="bijv. Remon Das — 0612524126">
+        <input type="text" id="f-aanmelder" placeholder="bijv. P. de Vries — 06 87654321">
       </div>
       <div class="form-group full">
         <label>Omschrijving werkzaamheden</label>
@@ -544,7 +664,22 @@
       </div>
       <div class="form-group full">
         <label>Volgende actie</label>
-        <input type="text" id="f-actie" placeholder="bijv. Inplannen, materiaal bestellen…">
+        <input type="text" id="f-actie" placeholder="Kies hieronder of typ zelf…">
+        <div class="actie-chips" id="actie-chips">
+          <div class="chips-label">Doen</div>
+          <button type="button" class="actie-chip" onclick="kiesActie('Inmeten')">Inmeten</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Inplannen')">Inplannen</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Materialen bestellen')">Materialen bestellen</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Offerte maken')">Offerte maken</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Offerte versturen')">Offerte versturen</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Contact opnemen')">Contact opnemen</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Terugbellen')">Terugbellen</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Oplevering plannen')">Oplevering plannen</button>
+          <div class="chips-label" style="margin-top:4px">Wachten</div>
+          <button type="button" class="actie-chip chip-wacht" onclick="kiesActie('Wachten op reactie')">Wachten op reactie</button>
+          <button type="button" class="actie-chip chip-wacht" onclick="kiesActie('Wachten op akkoord')">Wachten op akkoord</button>
+          <button type="button" class="actie-chip chip-wacht" onclick="kiesActie('Wachten op materiaal')">Wachten op materiaal</button>
+        </div>
       </div>
       <div class="form-group">
         <label>Actiedatum</label>
@@ -567,8 +702,23 @@
 </div>
 
 <script>
-const STATUS_LABELS = { offerte:'Offerte', lopend:'Lopend', wacht:'Wacht op materiaal', oplevering:'Oplevering', klaar:'Klaar' };
-const STATUS_CLASS  = { offerte:'s-offerte', lopend:'s-lopend', wacht:'s-wacht', oplevering:'s-oplevering', klaar:'s-klaar' };
+const STATUS_LABELS = { offerte:'Offerte', lopend:'Lopend', wacht:'Wacht op materiaal', klaar:'Klaar' };
+const STATUS_CLASS  = { offerte:'s-offerte', lopend:'s-lopend', wacht:'s-wacht', klaar:'s-klaar' };
+
+const OPDRACHTGEVER_LOGOS = {};
+
+function toonLogo(opdrachtgever) {
+  const logoWrap = document.getElementById('modal-logo');
+  const logoImg = document.getElementById('modal-logo-img');
+  const key = (opdrachtgever || '').toLowerCase().replace(/[^a-z]/g, '');
+  const src = OPDRACHTGEVER_LOGOS[key];
+  if (src) {
+    logoImg.src = src;
+    logoWrap.style.display = 'flex';
+  } else {
+    logoWrap.style.display = 'none';
+  }
+}
 
 let projecten = [];
 let nextId = 1;
@@ -581,6 +731,13 @@ let sortDir = 1;
 let apiKey = localStorage.getItem('compier_api_key') || '';
 let sbUrl = localStorage.getItem('compier_sb_url') || '';
 let sbKey = localStorage.getItem('compier_sb_key') || '';
+
+// TODO SECURITY: Row Level Security (RLS) inschakelen via Supabase SQL editor:
+// ALTER TABLE projecten ENABLE ROW LEVEL SECURITY;
+// CREATE POLICY "alleen ingelogde gebruikers" ON projecten
+//   FOR ALL USING (auth.role() = 'authenticated');
+// Daarna: authenticatie toevoegen via supabase.auth.signInWithPassword()
+// en Authorization header meesturen bij elke fetch naar Supabase.
 
 
 // ── Supabase ──────────────────────────────────────────────
@@ -728,7 +885,7 @@ ${tekst.substring(0, 4000)}`
     const raw = data.content[0].text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(raw);
 
-    const geldige_statussen = ['offerte','lopend','wacht','oplevering','klaar'];
+    const geldige_statussen = ['offerte','lopend','wacht','klaar'];
     if (parsed.status && geldige_statussen.includes(parsed.status))
       document.getElementById('f-status').value = parsed.status;
     if (parsed.nummer)        document.getElementById('f-nummer').value = parsed.nummer;
@@ -851,7 +1008,18 @@ function updateStatHighlight() {
   document.getElementById('stat-totaal-wrap').classList.toggle('active', activeFilter === 'alle');
 }
 
-document.getElementById('search').addEventListener('input', e => { searchQuery = e.target.value; render(); });
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  document.getElementById('search-clear').style.display = searchQuery ? 'block' : 'none';
+  render();
+});
+
+function clearSearch() {
+  document.getElementById('search').value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  searchQuery = '';
+  render();
+}
 
 function openModal(id) {
   editingId = id || null;
@@ -874,12 +1042,19 @@ function openModal(id) {
     document.getElementById('f-aanmelder').value = p.aanmelder || '';
     document.getElementById('f-notitie').value = p.notitie || '';
     renderActieLog(p.acties_log || []);
+    // Highlight juiste chip als de actie overeenkomt
+    document.querySelectorAll('.actie-chip').forEach(c => {
+      c.classList.toggle('selected', c.textContent === (p.actie || ''));
+    });
+    toonLogo(p.opdrachtgever);
   } else {
     ['f-nummer','f-adres','f-opdrachtgever','f-actie','f-contact','f-aanmelder','f-notitie'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('f-status').value = 'lopend';
     document.getElementById('f-datum').value = '';
     const bonTekst = document.getElementById('bon-tekst'); if (bonTekst) bonTekst.value = '';
     renderActieLog([]);
+    document.querySelectorAll('.actie-chip').forEach(c => c.classList.remove('selected'));
+    toonLogo('');
   }
   document.getElementById('modal').classList.add('open');
 }
@@ -934,6 +1109,64 @@ function agendaPunt() {
   btn.textContent = '✓';
   btn.classList.add('success');
   setTimeout(() => { btn.textContent = '📅'; btn.classList.remove('success'); }, 2000);
+}
+
+function toggleWR() {
+  const panel = document.getElementById('wr-panel');
+  const btn = document.querySelector('.wr-btn');
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  btn.classList.toggle('active', open);
+  if (open) document.getElementById('wr-bedrag').focus();
+}
+
+function berekenWR() {
+  const bedrag = parseFloat(document.getElementById('wr-bedrag').value) || 0;
+  const fmt = v => bedrag ? '€ ' + v.toFixed(2).replace('.', ',') : '—';
+  document.getElementById('wr-ak').textContent = fmt(bedrag * 0.10);
+  document.getElementById('wr-wr').textContent = fmt(bedrag * 0.05);
+}
+
+function kopieelRij(omschrijving, pct) {
+  const bedrag = parseFloat(document.getElementById('wr-bedrag').value) || 0;
+  if (!bedrag) { toonWRCopied('Vul eerst een bedrag in'); return; }
+  const val = (bedrag * pct / 100).toFixed(2).replace('.', ',');
+  const tekst = `${omschrijving}\t${pct}%\t€ ${val}`;
+  navigator.clipboard.writeText(tekst);
+  toonWRCopied('✓ Gekopieerd');
+}
+
+function kopieelAlles() {
+  const bedrag = parseFloat(document.getElementById('wr-bedrag').value) || 0;
+  if (!bedrag) { toonWRCopied('Vul eerst een bedrag in'); return; }
+  const ak = (bedrag * 0.10).toFixed(2).replace('.', ',');
+  const wr = (bedrag * 0.05).toFixed(2).replace('.', ',');
+  const tekst = `Algemene kosten\t10%\t€ ${ak}\nWinst & Risico\t5%\t€ ${wr}`;
+  navigator.clipboard.writeText(tekst);
+  toonWRCopied('✓ Beide regels gekopieerd');
+}
+
+function toonWRCopied(msg) {
+  const el = document.getElementById('wr-copied');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+const WACHT_ACTIES = ['Wachten op reactie', 'Wachten op akkoord', 'Wachten op materiaal'];
+
+function kiesActie(tekst) {
+  document.getElementById('f-actie').value = tekst;
+  document.querySelectorAll('.actie-chip').forEach(c => {
+    c.classList.toggle('selected', c.textContent === tekst);
+  });
+  // Status meelopen
+  const statusEl = document.getElementById('f-status');
+  if (WACHT_ACTIES.includes(tekst)) {
+    statusEl.value = 'wacht';
+  } else if (statusEl.value === 'wacht') {
+    statusEl.value = 'lopend';
+  }
 }
 
 function renderActieLog(log) {
