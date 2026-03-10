@@ -520,7 +520,7 @@
 
   /* ── Locaties view ───────────────────────── */
   #view-locaties { display: none; }
-  #view-locaties.active { display: flex; flex-direction: column; height: calc(100vh - 168px); }
+  #view-locaties.active { display: flex; flex-direction: column; height: calc(100vh - 168px); min-height: 500px; }
 
   .loc-toolbar {
     padding: 12px 20px;
@@ -588,7 +588,7 @@
   .loc-type-tag.wonen { background: rgba(76,175,110,0.15); color: var(--green); }
   .loc-type-tag.dagbesteding { background: rgba(74,144,217,0.15); color: var(--blue); }
 
-  #loc-map { flex: 1; background: #1a1a1a; }
+  #loc-map { flex: 1; background: #1a1a1a; min-height: 400px; }
 
   .loc-laad-msg {
     display: flex; align-items: center; justify-content: center;
@@ -1458,6 +1458,7 @@ async function initLocatiesTab() {
   buildMap();
   renderLocatieLijst();
   startGeocode();
+  setTimeout(() => { if (locatieMap) locatieMap.invalidateSize(); }, 300);
 }
 
 function bouwLocBody() {
