@@ -1,4 +1,4 @@
-const CACHE = 'compier-v1';
+const CACHE = 'compier-v2';
 const SHELL = [
   '/compier-dashboard/',
   '/compier-dashboard/index.html',
