@@ -703,6 +703,10 @@
       <span class="wr-btn-title">OPSLAG</span>
       <span class="wr-btn-sub">berekening</span>
     </button>
+    <a href="https://flixinc.github.io/storax-bestelling" target="_blank" class="wr-btn" style="text-decoration:none;" title="Storax bestelformulier">
+      <span class="wr-btn-title">STORAX</span>
+      <span class="wr-btn-sub">bestelling</span>
+    </a>
   </div>
   <div class="header-stats">
     <div class="stat" id="stat-lopend-wrap" onclick="setStatFilter('lopend')" title="Filter: Lopend"><div class="stat-num" id="stat-lopend">0</div><div class="stat-label">Lopend</div></div>
@@ -1489,7 +1493,7 @@ let geocodingActive = false;
 try { 
   const cached = JSON.parse(localStorage.getItem('compier_geo_cache') || '{}');
   // v2 = PDOK versie. Wis cache als het nog Nominatim-data was (geen versie-key)
-  if (cached.__v !== 2) { geocodeCache = {}; }
+  if (cached.__v !== 3) { geocodeCache = {}; }
   else { geocodeCache = cached; }
 } catch(e) {}
 
@@ -1600,11 +1604,20 @@ function addMarker(loc, lat, lng) {
   const telLink = t => `tel:${t.replace(/[^\d+]/g,'')}`;
   const telLine = loc.tel ? `<div class="popup-tel"><a href="${telLink(loc.tel)}" style="color:inherit;text-decoration:none;">☎ ${loc.tel}</a></div>` : '';
   const mobLine = loc.mob ? `<div class="popup-mob"><a href="${telLink(loc.mob)}" style="color:inherit;text-decoration:none;">📱 ${loc.mob}</a></div>` : '';
+  const subs = Array.isArray(loc.subgroepen) ? loc.subgroepen : [];
+  const subHtml = subs.length ? `
+    <div style="margin-top:8px;border-top:1px solid #333;padding-top:6px;">
+      ${subs.map(s => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;">
+          <span style="font-size:11px;color:#aaa;">${s.naam||'—'}</span>
+          ${s.mob ? `<a href="${telLink(s.mob)}" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#e87722;text-decoration:none;">${s.mob}</a>` : ''}
+        </div>`).join('')}
+    </div>` : '';
   marker.bindPopup(`
     <div class="popup-naam">${loc.naam}</div>
     <div class="popup-adres">${loc.adres||''}, ${loc.postcode||''} ${loc.plaats||''}</div>
-    ${telLine}${mobLine}
-  `, { maxWidth: 220 });
+    ${telLine}${mobLine}${subHtml}
+  `, { maxWidth: 260 });
   marker.on('click', () => selectLocatie(loc.id, false));
   locatieMarkers[loc.id] = marker;
 }
@@ -1637,7 +1650,7 @@ async function startGeocode() {
       const result = await pdokGeocode(loc.adres, loc.postcode, loc.plaats);
       if (result) {
         geocodeCache[key] = result;
-        geocodeCache.__v = 2;
+        geocodeCache.__v = 3;
         try { localStorage.setItem('compier_geo_cache', JSON.stringify(geocodeCache)); } catch(e) {}
         addMarker(loc, result.lat, result.lng);
       }
@@ -1673,12 +1686,17 @@ function renderLocatieLijst() {
     if (!nr) return '—';
     return `<a href="tel:${nr.replace(/[^\d+]/g,'')}" style="color:var(--orange);text-decoration:none;">${nr}</a>`;
   };
+  const subTxt = loc => {
+    const subs = Array.isArray(loc.subgroepen) ? loc.subgroepen : [];
+    if (!subs.length) return '';
+    return `<div style="font-size:11px;color:#666;margin-top:2px;">${subs.length} groep${subs.length!==1?'en':''}</div>`;
+  };
   const items = gefilterd.map(loc => `
     <div class="loc-item${selectedLocId===loc.id?' selected':''}" onclick="selectLocatie(${loc.id},true)" id="loc-item-${loc.id}">
       <div><span class="loc-type-tag ${loc.type}">${loc.type}</span></div>
       <div class="loc-item-naam">${loc.naam}</div>
       <div class="loc-item-adres">${loc.adres||''}, ${loc.postcode||''} ${loc.plaats||''}</div>
-      <div class="loc-item-tel">${telTxt(loc)}</div>
+      <div class="loc-item-tel">${telTxt(loc)}${subTxt(loc)}</div>
     </div>`).join('');
 
   const listEl = document.getElementById('loc-list');
