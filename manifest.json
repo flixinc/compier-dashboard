@@ -1,0 +1,24 @@
+{
+  "name": "Compier Dashboard",
+  "short_name": "Compier",
+  "description": "Projectbeheer dashboard voor Compier",
+  "start_url": "/compier-dashboard/",
+  "display": "standalone",
+  "background_color": "#0e0e0e",
+  "theme_color": "#e8611a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
