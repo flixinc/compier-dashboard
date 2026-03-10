@@ -1428,7 +1428,12 @@ let geocodeCache = {};
 let geocodeQueue = [];
 let geocodingActive = false;
 
-try { geocodeCache = JSON.parse(localStorage.getItem('compier_geo_cache') || '{}'); } catch(e) {}
+try { 
+  const cached = JSON.parse(localStorage.getItem('compier_geo_cache') || '{}');
+  // v2 = PDOK versie. Wis cache als het nog Nominatim-data was (geen versie-key)
+  if (cached.__v !== 2) { geocodeCache = {}; }
+  else { geocodeCache = cached; }
+} catch(e) {}
 
 async function initLocatiesTab() {
   // Wacht op Leaflet
@@ -1475,8 +1480,8 @@ function bouwLocBody() {
 function buildMap() {
   if (locatieMap) return;
   locatieMap = L.map('loc-map', { zoomControl: true }).setView([52.505, 4.97], 11);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://openstreetmap.org">OSM</a>', maxZoom: 19
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OSM</a> © <a href="https://carto.com">CARTO</a>', maxZoom: 19
   }).addTo(locatieMap);
   // Toon markers die al gecached zijn
   LOCATIES.forEach(loc => {
@@ -1509,6 +1514,20 @@ function addMarker(loc, lat, lng) {
   locatieMarkers[loc.id] = marker;
 }
 
+async function pdokGeocode(adres, postcode, plaats) {
+  // PDOK Locatieserver — officiële Nederlandse geodienst, preciezer dan Nominatim
+  const q = encodeURIComponent(`${adres} ${postcode||''} ${plaats||''}`);
+  const url = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${q}&rows=1&fl=centroide_ll,weergavenaam`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const docs = data?.response?.docs;
+  if (docs && docs[0] && docs[0].centroide_ll) {
+    const m = docs[0].centroide_ll.match(/POINT\(([\d.]+)\s+([\d.]+)\)/);
+    if (m) return { lat: parseFloat(m[2]), lng: parseFloat(m[1]) };
+  }
+  return null;
+}
+
 async function startGeocode() {
   geocodeQueue = LOCATIES.filter(loc => !geocodeCache[geoKey(loc)]);
   if (!geocodeQueue.length) { updateGeoStatus(0); return; }
@@ -1520,21 +1539,17 @@ async function startGeocode() {
     if (geocodeCache[key]) { remaining--; updateGeoStatus(remaining); continue; }
     updateGeoStatus(remaining);
     try {
-      const q = encodeURIComponent(`${loc.adres}, ${loc.postcode||''} ${loc.plaats||''}, Netherlands`);
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
-        headers: { 'User-Agent': 'CompierDashboard/1.0' }
-      });
-      const data = await res.json();
-      if (data[0]) {
-        const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
-        geocodeCache[key] = { lat, lng };
+      const result = await pdokGeocode(loc.adres, loc.postcode, loc.plaats);
+      if (result) {
+        geocodeCache[key] = result;
+        geocodeCache.__v = 2;
         try { localStorage.setItem('compier_geo_cache', JSON.stringify(geocodeCache)); } catch(e) {}
-        addMarker(loc, lat, lng);
+        addMarker(loc, result.lat, result.lng);
       }
     } catch(e) {}
     remaining--;
     updateGeoStatus(remaining);
-    await new Promise(r => setTimeout(r, 1100));
+    await new Promise(r => setTimeout(r, 150));
   }
   geocodingActive = false;
   updateGeoStatus(0);
