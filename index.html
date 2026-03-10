@@ -720,6 +720,7 @@
     <div class="stat" id="stat-lopend-wrap" onclick="setStatFilter('lopend')" title="Filter: Lopend"><div class="stat-num" id="stat-lopend">0</div><div class="stat-label">Lopend</div></div>
     <div class="stat" id="stat-wacht-wrap" onclick="setStatFilter('wacht')" title="Filter: Wacht"><div class="stat-num" id="stat-wacht">0</div><div class="stat-label">Wacht</div></div>
     <div class="stat" id="stat-totaal-wrap" onclick="setStatFilter('alle')" title="Filter: Alle"><div class="stat-num" id="stat-totaal">0</div><div class="stat-label">Actief</div></div>
+    <button onclick="forceerVervers()" title="Ververs app" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--muted);font-size:16px;line-height:1;border-radius:4px;transition:color 0.15s;" onmouseenter="this.style.color='var(--orange)'" onmouseleave="this.style.color='var(--muted)'">↺</button>
   </div>
 </header>
 
@@ -1752,6 +1753,21 @@ initApiKey();
 if (sbUrl && sbKey) laadProjecten(); else render();
 
 // PWA Service Worker
+async function forceerVervers() {
+  const btn = event.currentTarget;
+  btn.style.color = 'var(--orange)';
+  btn.style.transform = 'rotate(360deg)';
+  btn.style.transition = 'transform 0.5s ease, color 0.15s';
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+      const cacheKeys = await caches.keys();
+      await Promise.all(cacheKeys.map(k => caches.delete(k)));
+    }
+  } catch(e) {}
+  setTimeout(() => location.reload(true), 400);
+}
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/compier-dashboard/sw.js')
