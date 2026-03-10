@@ -492,7 +492,143 @@
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Tab nav ─────────────────────────────── */
+  .tab-nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+  }
+  .tab-btn {
+    padding: 11px 16px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+  /* ── Locaties view ───────────────────────── */
+  #view-locaties { display: none; }
+  #view-locaties.active { display: flex; flex-direction: column; height: calc(100vh - 168px); }
+
+  .loc-toolbar {
+    padding: 12px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .loc-toolbar .search-wrap { max-width: 320px; flex: 1; }
+
+  .loc-type-btns { display: flex; gap: 5px; }
+  .loc-type-btn {
+    padding: 5px 11px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .loc-type-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .loc-type-btn.active { background: var(--orange); border-color: var(--orange); color: white; }
+  .loc-type-btn.type-dag.active { background: var(--blue); border-color: var(--blue); }
+
+  .loc-body { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+  .loc-list {
+    width: 290px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .loc-count {
+    padding: 7px 14px;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .loc-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .loc-item:hover { background: var(--surface2); }
+  .loc-item.selected { background: rgba(232,97,26,0.1); border-left: 3px solid var(--orange); padding-left: 11px; }
+  .loc-item-naam { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .loc-item-adres { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .loc-item-tel { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--orange); }
+  .loc-type-tag {
+    display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 2px;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px;
+  }
+  .loc-type-tag.wonen { background: rgba(76,175,110,0.15); color: var(--green); }
+  .loc-type-tag.dagbesteding { background: rgba(74,144,217,0.15); color: var(--blue); }
+
+  #loc-map { flex: 1; background: #1a1a1a; }
+
+  .loc-laad-msg {
+    display: flex; align-items: center; justify-content: center;
+    flex: 1; color: var(--muted); font-size: 13px; gap: 10px;
+  }
+
+  /* Leaflet dark overrides */
+  .leaflet-container { background: #1a1a1a; }
+  .leaflet-tile { filter: brightness(0.72) contrast(1.05); }
+  .leaflet-popup-content-wrapper {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .leaflet-popup-tip { background: var(--surface); }
+  .leaflet-popup-content { margin: 12px 14px; font-family: 'IBM Plex Sans', sans-serif; }
+  .popup-naam { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--orange); margin-bottom: 3px; }
+  .popup-adres { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .popup-tel { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); }
+  .popup-mob { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); margin-top: 2px; }
+
+  .geo-status {
+    position: absolute; bottom: 10px; left: 300px;
+    background: rgba(15,15,15,0.88); border: 1px solid var(--border);
+    border-radius: 4px; padding: 5px 10px; font-size: 11px; color: var(--muted);
+    z-index: 10; pointer-events: none; transition: opacity 0.4s;
+  }
+  .geo-status.hidden { opacity: 0; }
+
+  .loc-error {
+    padding: 16px 14px; font-size: 12px; color: var(--red); text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    .loc-list { width: 100%; border-right: none; }
+    #loc-map { display: none; }
+    #view-locaties.active { height: auto; }
+    .loc-body { flex-direction: column; }
+  }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 </head>
 <body>
 
@@ -578,6 +714,14 @@
   <span>API ingesteld &mdash; klik om te wijzigen</span>
 </div>
 
+<!-- Tab navigatie -->
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-projecten" onclick="switchTab('projecten')">Projecten</button>
+  <button class="tab-btn" id="tab-locaties" onclick="switchTab('locaties')">Locaties</button>
+</div>
+
+<!-- View: Projecten -->
+<div id="view-projecten">
 <div class="toolbar">
   <div class="search-wrap">
     <input type="text" id="search" placeholder="Zoek nummer, adres, opdrachtgever…">
@@ -609,6 +753,26 @@
       <tbody id="tbody"></tbody>
     </table>
     <div id="empty" class="empty-state" style="display:none">Geen projecten gevonden.</div>
+  </div>
+</div><!-- /view-projecten -->
+
+<!-- View: Locaties -->
+<div id="view-locaties">
+  <div class="loc-toolbar">
+    <div class="search-wrap">
+      <input type="text" id="loc-search" placeholder="Zoek naam, adres, postcode…" oninput="filterLocaties()">
+      <button class="search-clear" id="loc-search-clear" onclick="clearLocSearch()" title="Wissen">✕</button>
+    </div>
+    <div class="loc-type-btns">
+      <button class="loc-type-btn active" data-type="alle" onclick="setLocType('alle')">Alle</button>
+      <button class="loc-type-btn" data-type="wonen" onclick="setLocType('wonen')">Wonen</button>
+      <button class="loc-type-btn type-dag" data-type="dagbesteding" onclick="setLocType('dagbesteding')">Dagbesteding</button>
+    </div>
+  </div>
+  <div class="loc-body" id="loc-body">
+    <div class="loc-laad-msg" id="loc-laad-msg">
+      <div class="spinner"></div><span>Locaties laden…</span>
+    </div>
   </div>
 </div>
 
@@ -1231,6 +1395,217 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 
 // upload-zone verwijderd
 
+// ── Tab navigatie ─────────────────────────────────────────
+let activeTab = 'projecten';
+let locatiesInitialized = false;
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('view-projecten').style.display = tab === 'projecten' ? '' : 'none';
+  const locView = document.getElementById('view-locaties');
+  locView.classList.toggle('active', tab === 'locaties');
+  document.getElementById('tab-projecten').classList.toggle('active', tab === 'projecten');
+  document.getElementById('tab-locaties').classList.toggle('active', tab === 'locaties');
+  if (tab === 'locaties') {
+    if (!locatiesInitialized) {
+      locatiesInitialized = true;
+      setTimeout(initLocatiesTab, 50);
+    } else if (locatieMap) {
+      setTimeout(() => locatieMap.invalidateSize(), 50);
+    }
+  }
+}
+
+// ── Locaties (Supabase) ───────────────────────────────────
+let LOCATIES = [];
+let locatieMap = null;
+let locatieMarkers = {};
+let selectedLocId = null;
+let locTypeFilter = 'alle';
+let locSearchQuery = '';
+let geocodeCache = {};
+let geocodeQueue = [];
+let geocodingActive = false;
+
+try { geocodeCache = JSON.parse(localStorage.getItem('compier_geo_cache') || '{}'); } catch(e) {}
+
+async function initLocatiesTab() {
+  // Wacht op Leaflet
+  if (!window.L) {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    document.head.appendChild(s);
+    await new Promise(r => { s.onload = r; });
+  }
+
+  // Locaties laden uit Supabase
+  if (!sbUrl || !sbKey) {
+    document.getElementById('loc-body').innerHTML =
+      '<div class="loc-error">Supabase nog niet ingesteld. Vul eerst de API-gegevens in.</div>';
+    return;
+  }
+  try {
+    const data = await sbFetch('locaties?order=naam.asc');
+    LOCATIES = Array.isArray(data) ? data : [];
+  } catch(e) {
+    document.getElementById('loc-body').innerHTML =
+      `<div class="loc-error">Laden mislukt: ${e.message}<br>Controleer of de tabel 'locaties' bestaat in Supabase.</div>`;
+    return;
+  }
+
+  // Opbouwen
+  bouwLocBody();
+  buildMap();
+  renderLocatieLijst();
+  startGeocode();
+}
+
+function bouwLocBody() {
+  document.getElementById('loc-body').innerHTML = `
+    <div class="loc-list" id="loc-list">
+      <div class="loc-count" id="loc-count">—</div>
+    </div>
+    <div id="loc-map"></div>
+    <div class="geo-status hidden" id="geo-status"></div>
+  `;
+}
+
+function buildMap() {
+  if (locatieMap) return;
+  locatieMap = L.map('loc-map', { zoomControl: true }).setView([52.505, 4.97], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OSM</a>', maxZoom: 19
+  }).addTo(locatieMap);
+  // Toon markers die al gecached zijn
+  LOCATIES.forEach(loc => {
+    const key = geoKey(loc);
+    if (geocodeCache[key]) addMarker(loc, geocodeCache[key].lat, geocodeCache[key].lng);
+  });
+}
+
+function geoKey(loc) {
+  return (loc.adres + ' ' + (loc.postcode||'') + ' ' + (loc.plaats||'')).trim();
+}
+
+function addMarker(loc, lat, lng) {
+  if (locatieMarkers[loc.id]) return;
+  const color = loc.type === 'dagbesteding' ? '#4a90d9' : '#4caf6e';
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2px solid rgba(0,0,0,0.4);box-shadow:0 0 6px ${color}88;"></div>`,
+    iconSize: [12,12], iconAnchor: [6,6], popupAnchor: [0,-10]
+  });
+  const marker = L.marker([lat,lng], { icon }).addTo(locatieMap);
+  const telLine = loc.tel ? `<div class="popup-tel">☎ ${loc.tel}</div>` : '';
+  const mobLine = loc.mob ? `<div class="popup-mob">📱 ${loc.mob}</div>` : '';
+  marker.bindPopup(`
+    <div class="popup-naam">${loc.naam}</div>
+    <div class="popup-adres">${loc.adres||''}, ${loc.postcode||''} ${loc.plaats||''}</div>
+    ${telLine}${mobLine}
+  `, { maxWidth: 220 });
+  marker.on('click', () => selectLocatie(loc.id, false));
+  locatieMarkers[loc.id] = marker;
+}
+
+async function startGeocode() {
+  geocodeQueue = LOCATIES.filter(loc => !geocodeCache[geoKey(loc)]);
+  if (!geocodeQueue.length) { updateGeoStatus(0); return; }
+  if (geocodingActive) return;
+  geocodingActive = true;
+  let remaining = geocodeQueue.length;
+  for (const loc of geocodeQueue) {
+    const key = geoKey(loc);
+    if (geocodeCache[key]) { remaining--; updateGeoStatus(remaining); continue; }
+    updateGeoStatus(remaining);
+    try {
+      const q = encodeURIComponent(`${loc.adres}, ${loc.postcode||''} ${loc.plaats||''}, Netherlands`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+        headers: { 'User-Agent': 'CompierDashboard/1.0' }
+      });
+      const data = await res.json();
+      if (data[0]) {
+        const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+        geocodeCache[key] = { lat, lng };
+        try { localStorage.setItem('compier_geo_cache', JSON.stringify(geocodeCache)); } catch(e) {}
+        addMarker(loc, lat, lng);
+      }
+    } catch(e) {}
+    remaining--;
+    updateGeoStatus(remaining);
+    await new Promise(r => setTimeout(r, 1100));
+  }
+  geocodingActive = false;
+  updateGeoStatus(0);
+}
+
+function updateGeoStatus(remaining) {
+  const el = document.getElementById('geo-status');
+  if (!el) return;
+  if (remaining <= 0) { el.classList.add('hidden'); }
+  else { el.classList.remove('hidden'); el.textContent = `📍 ${remaining} locaties laden…`; }
+}
+
+function renderLocatieLijst() {
+  const q = locSearchQuery.toLowerCase();
+  const gefilterd = LOCATIES.filter(loc => {
+    if (locTypeFilter !== 'alle' && loc.type !== locTypeFilter) return false;
+    if (q) {
+      const zoek = [loc.naam,loc.adres,loc.postcode,loc.plaats,loc.tel,loc.mob].join(' ').toLowerCase();
+      if (!zoek.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const telTxt = loc => loc.mob || loc.tel || '—';
+  const items = gefilterd.map(loc => `
+    <div class="loc-item${selectedLocId===loc.id?' selected':''}" onclick="selectLocatie(${loc.id},true)" id="loc-item-${loc.id}">
+      <div><span class="loc-type-tag ${loc.type}">${loc.type}</span></div>
+      <div class="loc-item-naam">${loc.naam}</div>
+      <div class="loc-item-adres">${loc.adres||''}, ${loc.postcode||''} ${loc.plaats||''}</div>
+      <div class="loc-item-tel">${telTxt(loc)}</div>
+    </div>`).join('');
+
+  const listEl = document.getElementById('loc-list');
+  if (!listEl) return;
+  listEl.innerHTML = `<div class="loc-count" id="loc-count">${gefilterd.length} locatie${gefilterd.length!==1?'s':''}</div>${items || '<div class="loc-error">Geen resultaten</div>'}`;
+  const clr = document.getElementById('loc-search-clear');
+  if (clr) clr.style.display = q ? 'block' : 'none';
+}
+
+function selectLocatie(id, flyTo) {
+  selectedLocId = id;
+  renderLocatieLijst();
+  const marker = locatieMarkers[id];
+  if (marker && flyTo && locatieMap) {
+    locatieMap.flyTo(marker.getLatLng(), 16, { duration: 0.8 });
+    setTimeout(() => marker.openPopup(), 900);
+  } else if (marker) {
+    marker.openPopup();
+  }
+  setTimeout(() => {
+    const el = document.getElementById('loc-item-' + id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+function filterLocaties() {
+  locSearchQuery = document.getElementById('loc-search').value;
+  renderLocatieLijst();
+}
+
+function clearLocSearch() {
+  document.getElementById('loc-search').value = '';
+  locSearchQuery = '';
+  renderLocatieLijst();
+}
+
+function setLocType(type) {
+  locTypeFilter = type;
+  document.querySelectorAll('.loc-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type===type));
+  renderLocatieLijst();
+}
+
+// ─────────────────────────────────────────────────────────
 initApiKey();
 if (sbUrl && sbKey) laadProjecten(); else render();
 </script>
