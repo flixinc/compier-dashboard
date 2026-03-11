@@ -64,7 +64,6 @@
   .stat:hover { background: rgba(232,97,26,0.1); }
   .stat.active { background: rgba(232,97,26,0.15); }
   .stat-num { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: var(--orange); line-height: 1; }
-  .stat-num-sm { font-size: 14px !important; color: var(--blue) !important; }
   .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
   .stat.active .stat-label { color: var(--orange); }
 
@@ -314,9 +313,6 @@
   .chip-wacht { border-color: rgba(74,144,217,0.3); color: var(--blue); }
   .chip-wacht:hover { border-color: var(--blue); color: var(--blue); background: rgba(74,144,217,0.07); }
   .chip-wacht.selected { border-color: var(--blue); color: var(--blue); background: rgba(74,144,217,0.15); }
-  .chip-ingepland { border-color: rgba(76,175,80,0.3); color: var(--green); }
-  .chip-ingepland:hover { border-color: var(--green); color: var(--green); background: rgba(76,175,80,0.07); }
-  .chip-ingepland.selected { border-color: var(--green); color: var(--green); background: rgba(76,175,80,0.15); }
   .chips-label { width: 100%; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
     margin-top: 14px;
     border-top: 1px solid var(--border);
@@ -457,36 +453,6 @@
   #f-notitie { min-height: 120px; }
 
   .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-
-  /* Foto upload */
-  .foto-zone {
-    border: 1.5px dashed var(--border);
-    border-radius: 6px;
-    padding: 12px;
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-    text-align: center;
-    position: relative;
-    background: var(--surface2);
-  }
-  .foto-zone:hover { border-color: var(--orange); background: rgba(232,97,26,0.04); }
-  .foto-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .foto-zone-label { font-size: 11px; color: var(--muted); }
-  .foto-zone-label strong { color: var(--orange); }
-  .foto-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
-  .foto-thumb {
-    position: relative; width: 72px; height: 72px; border-radius: 4px;
-    overflow: hidden; border: 1px solid var(--border); flex-shrink: 0;
-  }
-  .foto-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .foto-del {
-    position: absolute; top: 2px; right: 2px;
-    background: rgba(0,0,0,0.65); color: white; border: none;
-    border-radius: 50%; width: 18px; height: 18px; font-size: 10px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    line-height: 1;
-  }
-  .foto-del:hover { background: rgba(192,57,43,0.9); }
   .btn-cancel {
     padding: 9px 16px; background: transparent; border: 1px solid var(--border);
     color: var(--muted); border-radius: 4px; font-family: 'IBM Plex Sans', sans-serif;
@@ -856,6 +822,7 @@
         <tr>
           <th onclick="sortBy('nummer')">Nummer</th>
           <th onclick="sortBy('adres')">Adres</th>
+          <th onclick="sortBy('ruimte')">Ruimte</th>
           <th onclick="sortBy('opdrachtgever')">Opdrachtgever</th>
           <th onclick="sortBy('status')">Status</th>
           <th onclick="sortBy('actie')">Volgende actie</th>
@@ -914,9 +881,7 @@
         <select id="f-status">
           <option value="offerte">Offerte</option>
           <option value="lopend" selected>Lopend</option>
-          <option value="wacht-reactie">Wacht op reactie</option>
-          <option value="wacht-akkoord">Wacht op akkoord</option>
-          <option value="wacht-materiaal">Wacht op materiaal</option>
+          <option value="wacht">Wacht op materiaal</option>
           <option value="klaar">Klaar</option>
         </select>
       </div>
@@ -924,8 +889,8 @@
         <label>Adres werklocatie</label>
         <input type="text" id="f-adres" placeholder="Straat + nr, postcode, Plaats">
       </div>
-      <div class="form-group">
-        <label>Ruimte</label>
+      <div class="form-group full">
+        <label>Ruimtenummer</label>
         <input type="text" id="f-ruimte" placeholder="bijv. 3.12 of hal 2e verdieping">
       </div>
       <div class="form-group full">
@@ -951,8 +916,6 @@
           <div class="chips-label">Doen</div>
           <button type="button" class="actie-chip" onclick="kiesActie('Inmeten')">Inmeten</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Inplannen')">Inplannen</button>
-          <button type="button" class="actie-chip chip-ingepland" onclick="kiesActie('Ingepland')">Ingepland</button>
-          <button type="button" class="actie-chip" onclick="kiesActie('Montage')">Montage</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Materialen bestellen')">Materialen bestellen</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Offerte maken')">Offerte maken</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Offerte versturen')">Offerte versturen</button>
@@ -966,7 +929,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label id="datum-label">Actiedatum</label>
+        <label>Actiedatum</label>
         <input type="date" id="f-datum">
       </div>
     </div>
@@ -974,16 +937,6 @@
     <div class="actie-log" id="actie-log" style="display:none">
       <div class="actie-log-titel">Vorige acties</div>
       <div id="actie-log-items"></div>
-    </div>
-
-    <!-- Foto's -->
-    <div class="form-group full" style="margin-top:14px">
-      <label>Foto's</label>
-      <div class="foto-zone" id="foto-zone">
-        <input type="file" id="foto-input" accept="image/*" multiple onchange="fotoToevoegen(this.files)">
-        <div class="foto-zone-label">📷 <strong>Kies foto's</strong> of sleep ze hierin</div>
-      </div>
-      <div class="foto-grid" id="foto-grid"></div>
     </div>
 
     <div class="modal-actions">
@@ -996,8 +949,8 @@
 </div>
 
 <script>
-const STATUS_LABELS = { offerte:'Offerte', lopend:'Lopend', 'wacht-reactie':'Wacht op reactie', 'wacht-akkoord':'Wacht op akkoord', 'wacht-materiaal':'Wacht op materiaal', klaar:'Klaar' };
-const STATUS_CLASS  = { offerte:'s-offerte', lopend:'s-lopend', 'wacht-reactie':'s-wacht', 'wacht-akkoord':'s-wacht', 'wacht-materiaal':'s-wacht', klaar:'s-klaar' };
+const STATUS_LABELS = { offerte:'Offerte', lopend:'Lopend', wacht:'Wacht op materiaal', klaar:'Klaar' };
+const STATUS_CLASS  = { offerte:'s-offerte', lopend:'s-lopend', wacht:'s-wacht', klaar:'s-klaar' };
 
 const OPDRACHTGEVER_LOGOS = {};
 
@@ -1161,6 +1114,7 @@ async function uitLezenBon() {
 Velden:
 - nummer: kenmerk of referentienummer (bijv. "M2603 0024"), of leeg als niet aanwezig
 - adres: volledig werklocatie-adres (straat + huisnummer + postcode + plaats)
+- ruimte: ruimtenummer zoals vermeld in de bon (bijv. "3.12", "hal 2e verdieping"), of leeg als niet aanwezig
 - opdrachtgever: de organisatie die de opdracht verleent aan Compier. Dit is NOOIT Compier zelf. Kijk naar de afzender, de ondertekening of de organisatienaam bij het adres van de opdrachtgever. Gebruik de overkoepelende naam, niet een afdeling zoals 'Servicedesk Facilitair'.
 - contact: de naam die onder "Met vriendelijke groet" staat (de ondertekenaar) plus diens telefoonnummer, formaat "Naam — telefoonnummer"
 - aanmelder: de contactpersoon op de werklocatie (bijv. vermeld als "Naam aanmelder" of "contactpersoon ter plaatse"), formaat "Naam — telefoonnummer"
@@ -1179,11 +1133,12 @@ ${tekst.substring(0, 4000)}`
     const raw = data.content[0].text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(raw);
 
-    const geldige_statussen = ['offerte','lopend','wacht-reactie','wacht-akkoord','wacht-materiaal','klaar'];
+    const geldige_statussen = ['offerte','lopend','wacht','klaar'];
     if (parsed.status && geldige_statussen.includes(parsed.status))
       document.getElementById('f-status').value = parsed.status;
     if (parsed.nummer)        document.getElementById('f-nummer').value = parsed.nummer;
     if (parsed.adres)         document.getElementById('f-adres').value = parsed.adres;
+    if (parsed.ruimte)        document.getElementById('f-ruimte').value = parsed.ruimte;
     if (parsed.opdrachtgever) document.getElementById('f-opdrachtgever').value = parsed.opdrachtgever;
     if (parsed.contact)       document.getElementById('f-contact').value = parsed.contact;
     if (parsed.aanmelder)     document.getElementById('f-aanmelder').value = parsed.aanmelder;
@@ -1231,7 +1186,7 @@ function fmt(ds) {
 function render() {
   const data = getFiltered();
   document.getElementById('stat-lopend').textContent = projecten.filter(p => p.status === 'lopend').length;
-  document.getElementById('stat-wacht').textContent  = projecten.filter(p => p.status?.startsWith('wacht')).length;
+  document.getElementById('stat-wacht').textContent  = projecten.filter(p => p.status === 'wacht').length;
   document.getElementById('stat-totaal').textContent = projecten.filter(p => p.status !== 'klaar').length;
 
   const empty = document.getElementById('empty');
@@ -1243,9 +1198,10 @@ function render() {
       <tr onclick="openModal(${p.id})">
         <td><div class="proj-num">${p.nummer}</div></td>
         <td>
-          <div class="proj-addr">${p.adres}${p.ruimte ? ` <span style="color:var(--muted);font-size:11px">· ${p.ruimte}</span>` : ''}${p.fotos?.length ? ` <span title="${p.fotos.length} foto('s)" style="font-size:11px;opacity:.6">📷${p.fotos.length}</span>` : ''}</div>
+          <div class="proj-addr">${p.adres}</div>
           ${p.notitie ? `<div class="proj-client">${p.notitie.substring(0,55)}${p.notitie.length>55?'…':''}</div>` : ''}
         </td>
+        <td><div class="proj-client">${p.ruimte || '—'}</div></td>
         <td>
           <div style="font-size:13px">${p.opdrachtgever}</div>
           ${p.contact ? `<div class="proj-client">${p.contact.split('—')[0].trim()}</div>` : ''}
@@ -1264,7 +1220,7 @@ function render() {
         <span class="card-num">${p.nummer}</span>
         <span class="status-badge ${STATUS_CLASS[p.status]}"><span class="status-dot"></span>${STATUS_LABELS[p.status]}</span>
       </div>
-      <div class="card-addr">${p.adres}${p.ruimte ? ` <span style="color:var(--muted);font-size:11px">· ${p.ruimte}</span>` : ''}${p.fotos?.length ? ` <span title="${p.fotos.length} foto('s)" style="font-size:11px;opacity:.6">📷${p.fotos.length}</span>` : ''}</div>
+      <div class="card-addr">${p.adres}</div>
       <div class="card-client">${p.opdrachtgever}${p.contact ? ' · ' + p.contact.split('—')[0].trim() : ''}</div>
       ${p.notitie ? `<div class="card-actie" style="color:var(--muted);font-size:12px;margin-bottom:6px">${p.notitie.substring(0,80)}…</div>` : ''}
       ${p.actie ? `<div class="card-actie">${p.actie}</div>` : ''}
@@ -1333,15 +1289,10 @@ function openModal(id) {
     document.getElementById('f-status').value = p.status;
     document.getElementById('f-actie').value = p.actie || '';
     document.getElementById('f-datum').value = p.datum || '';
-    // Datum label aanpassen op geladen actie
-    const dl = document.getElementById('datum-label');
-    if (dl) dl.textContent = DATUM_LABELS[p.actie] || 'Actiedatum';
     document.getElementById('f-contact').value = p.contact || '';
     document.getElementById('f-aanmelder').value = p.aanmelder || '';
     document.getElementById('f-notitie').value = p.notitie || '';
     renderActieLog(p.acties_log || []);
-    fotosHuidigeModal = Array.isArray(p.fotos) ? [...p.fotos] : [];
-    renderFotoGrid();
     // Highlight juiste chip als de actie overeenkomt
     document.querySelectorAll('.actie-chip').forEach(c => {
       c.classList.toggle('selected', c.textContent === (p.actie || ''));
@@ -1349,12 +1300,8 @@ function openModal(id) {
     toonLogo(p.opdrachtgever);
   } else {
     ['f-nummer','f-adres','f-ruimte','f-opdrachtgever','f-actie','f-contact','f-aanmelder','f-notitie'].forEach(i => document.getElementById(i).value = '');
-    fotosHuidigeModal = [];
-    renderFotoGrid();
     document.getElementById('f-status').value = 'lopend';
     document.getElementById('f-datum').value = '';
-    const dl2 = document.getElementById('datum-label');
-    if (dl2) dl2.textContent = 'Actiedatum';
     const bonTekst = document.getElementById('bon-tekst'); if (bonTekst) bonTekst.value = '';
     renderActieLog([]);
     document.querySelectorAll('.actie-chip').forEach(c => c.classList.remove('selected'));
@@ -1459,28 +1406,15 @@ function toonWRCopied(msg) {
 
 const WACHT_ACTIES = ['Wachten op reactie', 'Wachten op akkoord', 'Wachten op materiaal'];
 
-const DATUM_LABELS = {
-  'Ingepland':           'Datum uitvoering',
-  'Inplannen':           'Inplannen voor',
-  'Wachten op reactie':  'Deadline',
-  'Wachten op akkoord':  'Deadline',
-  'Wachten op materiaal':'Verwacht op',
-};
-
 function kiesActie(tekst) {
   document.getElementById('f-actie').value = tekst;
   document.querySelectorAll('.actie-chip').forEach(c => {
     c.classList.toggle('selected', c.textContent === tekst);
   });
-  // Datum label dynamisch
-  const datumLabel = document.getElementById('datum-label');
-  if (datumLabel) datumLabel.textContent = DATUM_LABELS[tekst] || 'Actiedatum';
   // Status meelopen
   const statusEl = document.getElementById('f-status');
   if (WACHT_ACTIES.includes(tekst)) {
     statusEl.value = 'wacht';
-  } else if (tekst === 'Ingepland') {
-    statusEl.value = 'lopend';
   } else if (statusEl.value === 'wacht') {
     statusEl.value = 'lopend';
   }
@@ -1510,7 +1444,6 @@ async function saveProject() {
     contact:       document.getElementById('f-contact').value.trim(),
     aanmelder:     document.getElementById('f-aanmelder').value.trim(),
     notitie:       document.getElementById('f-notitie').value.trim(),
-    fotos:         [...fotosHuidigeModal],
   };
   if (!p.nummer || !p.adres) { alert('Vul minimaal kenmerk en adres in.'); return; }
 
@@ -1549,64 +1482,6 @@ document.getElementById('modal').addEventListener('click', function(e) { if (e.t
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // upload-zone verwijderd
-
-// ── FOTO UPLOAD ──
-let fotosHuidigeModal = []; // array van base64 strings
-
-function fotoToevoegen(files) {
-  Array.from(files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        // Resize naar max 1200px breed/hoog, JPEG q0.75
-        const maxPx = 1200;
-        let w = img.width, h = img.height;
-        if (w > maxPx || h > maxPx) {
-          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
-          else       { w = Math.round(w * maxPx / h); h = maxPx; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        const b64 = canvas.toDataURL('image/jpeg', 0.75);
-        fotosHuidigeModal.push(b64);
-        renderFotoGrid();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-  // Reset input zodat dezelfde foto opnieuw gekozen kan worden
-  document.getElementById('foto-input').value = '';
-}
-
-function fotoVerwijderen(idx) {
-  fotosHuidigeModal.splice(idx, 1);
-  renderFotoGrid();
-}
-
-function renderFotoGrid() {
-  const grid = document.getElementById('foto-grid');
-  if (!fotosHuidigeModal.length) { grid.innerHTML = ''; return; }
-  grid.innerHTML = fotosHuidigeModal.map((b64, i) => `
-    <div class="foto-thumb">
-      <img src="${b64}" alt="foto ${i+1}">
-      <button class="foto-del" onclick="fotoVerwijderen(${i})" title="Verwijder foto">✕</button>
-    </div>`).join('');
-}
-
-// Drag & drop support op foto-zone
-document.addEventListener('DOMContentLoaded', () => {
-  const zone = document.getElementById('foto-zone');
-  if (!zone) return;
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.classList.remove('drag');
-    fotoToevoegen(e.dataTransfer.files);
-  });
-});
 
 // ── Tab navigatie ─────────────────────────────────────────
 let activeTab = 'projecten';
