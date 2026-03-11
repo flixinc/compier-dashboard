@@ -1451,6 +1451,13 @@ async function saveProject() {
   };
   if (!p.nummer || !p.adres) { alert('Vul minimaal kenmerk en adres in.'); return; }
 
+  // Dubbel M-nummer check — sla alleen over bij bewerken van hetzelfde project
+  const dubbel = projecten.find(x => x.nummer.trim().toLowerCase() === p.nummer.toLowerCase() && x.id !== editingId);
+  if (dubbel) {
+    alert(`⚠️ Kenmerk "${p.nummer}" bestaat al bij:\n${dubbel.adres}${dubbel.ruimte ? ' · ' + dubbel.ruimte : ''} — ${dubbel.opdrachtgever}`);
+    return;
+  }
+
   if (editingId) {
     const idx = projecten.findIndex(x => x.id === editingId);
     const bestaand = projecten[idx];
