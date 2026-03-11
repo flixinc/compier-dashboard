@@ -1576,13 +1576,13 @@ const TILE_LAYERS = {
 function buildMap() {
   if (locatieMap) return;
   locatieMap = L.map('loc-map', { zoomControl: true, attributionControl: true }).setView([52.505, 4.97], 11);
-  setMapLayer('dark');
+  setMapLayer('satelliet');
   // Layer toggle control
   const ctrl = L.control({ position: 'topright' });
   ctrl.onAdd = () => {
     const div = L.DomUtil.create('div', 'map-layer-ctrl');
     div.innerHTML = Object.entries(TILE_LAYERS).map(([key, val]) =>
-      `<button class="map-layer-btn${key==='dark'?' active':''}" data-layer="${key}" onclick="setMapLayer('${key}')">${val.label}</button>`
+      `<button class="map-layer-btn${key==='satelliet'?' active':''}" data-layer="${key}" onclick="setMapLayer('${key}')">${val.label}</button>`
     ).join('');
     L.DomEvent.disableClickPropagation(div);
     return div;
