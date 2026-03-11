@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Compier O&A — Projecten</title>
+<title>Compier — Projecten</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e8611a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -882,6 +882,8 @@
           <option value="offerte">Offerte</option>
           <option value="lopend" selected>Lopend</option>
           <option value="wacht">Wacht op materiaal</option>
+          <option value="wacht-reactie">Wacht op reactie</option>
+          <option value="wacht-akkoord">Wacht op akkoord</option>
           <option value="klaar">Klaar</option>
         </select>
       </div>
@@ -916,6 +918,8 @@
           <div class="chips-label">Doen</div>
           <button type="button" class="actie-chip" onclick="kiesActie('Inmeten')">Inmeten</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Inplannen')">Inplannen</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Ingepland')">Ingepland</button>
+          <button type="button" class="actie-chip" onclick="kiesActie('Montage')">Montage</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Materialen bestellen')">Materialen bestellen</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Offerte maken')">Offerte maken</button>
           <button type="button" class="actie-chip" onclick="kiesActie('Offerte versturen')">Offerte versturen</button>
@@ -949,8 +953,8 @@
 </div>
 
 <script>
-const STATUS_LABELS = { offerte:'Offerte', lopend:'Lopend', wacht:'Wacht op materiaal', klaar:'Klaar' };
-const STATUS_CLASS  = { offerte:'s-offerte', lopend:'s-lopend', wacht:'s-wacht', klaar:'s-klaar' };
+const STATUS_LABELS = { offerte:'Offerte', lopend:'Lopend', wacht:'Wacht op materiaal', 'wacht-reactie':'Wacht op reactie', 'wacht-akkoord':'Wacht op akkoord', klaar:'Klaar' };
+const STATUS_CLASS  = { offerte:'s-offerte', lopend:'s-lopend', wacht:'s-wacht', 'wacht-reactie':'s-wacht', 'wacht-akkoord':'s-wacht', klaar:'s-klaar' };
 
 const OPDRACHTGEVER_LOGOS = {};
 
@@ -1133,7 +1137,7 @@ ${tekst.substring(0, 4000)}`
     const raw = data.content[0].text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(raw);
 
-    const geldige_statussen = ['offerte','lopend','wacht','klaar'];
+    const geldige_statussen = ['offerte','lopend','wacht','wacht-reactie','wacht-akkoord','klaar'];
     if (parsed.status && geldige_statussen.includes(parsed.status))
       document.getElementById('f-status').value = parsed.status;
     if (parsed.nummer)        document.getElementById('f-nummer').value = parsed.nummer;
@@ -1160,7 +1164,7 @@ ${tekst.substring(0, 4000)}`
 
 function getFiltered() {
   return projecten.filter(p => {
-    const matchFilter = activeFilter === 'alle' || p.status === activeFilter;
+    const matchFilter = activeFilter === 'alle' || p.status === activeFilter || (activeFilter === 'wacht' && p.status?.startsWith('wacht'));
     const q = searchQuery.toLowerCase();
     const matchSearch = !q || [p.nummer, p.adres, p.ruimte, p.opdrachtgever, p.actie, p.notitie, p.contact].some(v => (v||'').toLowerCase().includes(q));
     return matchFilter && matchSearch;
@@ -1186,7 +1190,7 @@ function fmt(ds) {
 function render() {
   const data = getFiltered();
   document.getElementById('stat-lopend').textContent = projecten.filter(p => p.status === 'lopend').length;
-  document.getElementById('stat-wacht').textContent  = projecten.filter(p => p.status === 'wacht').length;
+  document.getElementById('stat-wacht').textContent  = projecten.filter(p => p.status?.startsWith('wacht')).length;
   document.getElementById('stat-totaal').textContent = projecten.filter(p => p.status !== 'klaar').length;
 
   const empty = document.getElementById('empty');
