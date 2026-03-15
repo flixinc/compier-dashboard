@@ -825,11 +825,6 @@
   <span class="api-status missing" id="api-status">Niet ingesteld</span>
 </div>
 
-<div class="api-toggle" id="api-toggle" onclick="toggleApiBanner()">
-  <div class="api-toggle-dot"></div>
-  <span>API ingesteld &mdash; klik om te wijzigen</span>
-</div>
-
 <!-- Tab navigatie -->
 <div class="tab-nav">
   <button class="tab-btn active" id="tab-projecten" onclick="switchTab('projecten')">Projecten</button>
@@ -1118,17 +1113,16 @@ function updateApiStatus() {
 }
 
 function collapseBannerIfComplete() {
-  if (apiKey && sbUrl && sbKey) {
-    document.querySelector('.api-banner').classList.add('collapsed');
-    document.getElementById('api-toggle').classList.add('visible');
-  }
+  const allesOk = apiKey && sbUrl && sbKey;
+  document.querySelector('.api-banner').classList.toggle('collapsed', allesOk);
+  // Toggle knop ook verbergen als alles ingesteld is
+  
 }
 
 function toggleApiBanner() {
   const banner = document.querySelector('.api-banner');
-  const toggle = document.getElementById('api-toggle');
-  banner.classList.remove('collapsed');
-  toggle.classList.remove('visible');
+  const isCollapsed = banner.classList.contains('collapsed');
+  banner.classList.toggle('collapsed', !isCollapsed);
 }
 
 function saveApiKey() {
