@@ -68,6 +68,11 @@
   .stat.active .stat-label { color: var(--orange); }
 
   /* Opslag Knop */
+  .header-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .wr-btn {
     display: flex; flex-direction: column; align-items: center;
     background: rgba(232,97,26,0.08); border: 1px solid rgba(232,97,26,0.25);
@@ -488,11 +493,23 @@
     .table-wrap { display: none; }
     .cards { display: flex; }
     .filter-btns { display: none; }
-    header { padding: 12px 16px; }
+    header { padding: 10px 16px; gap: 8px; }
     .toolbar { padding: 12px 16px; }
     .main { padding: 14px 16px; }
-    .header-stats { gap: 0; }
+    .header-stats { gap: 0; flex-shrink: 0; }
     .stat { padding: 4px 5px; }
+    .logo { flex-shrink: 0; }
+    .header-tools {
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      gap: 6px;
+      padding: 2px 0;
+      min-width: 0;
+    }
+    .header-tools::-webkit-scrollbar { display: none; }
+    .wr-btn { flex-shrink: 0; }
   }
   @media (min-width: 701px) {
     .modal-overlay { align-items: center; }
@@ -696,13 +713,30 @@
     #view-locaties.active { height: auto; }
     .loc-body { flex-direction: column; }
   }
+  /* ── DEUREN SECTIE IN MODAL ── */
+  .deuren-sectie { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .deuren-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .deuren-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .deuren-btn { display: flex; align-items: center; gap: 6px; background: rgba(232,97,26,.08); border: 1px solid rgba(232,97,26,.25); border-radius: 5px; padding: 6px 12px; color: var(--orange); font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all .15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .deuren-btn:hover { background: rgba(232,97,26,.16); border-color: var(--orange); }
+  .deuren-btn svg { flex-shrink: 0; }
+  .deuren-lijst { display: flex; flex-direction: column; gap: 6px; }
+  .deuren-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; }
+  .deuren-item-nr { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); min-width: 20px; }
+  .deuren-item-naam { font-size: 12px; flex: 1; }
+  .deuren-item-maat { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+  .deuren-item-status { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; text-transform: uppercase; letter-spacing: .04em; flex-shrink: 0; }
+  .ds-ingemeten { background: rgba(76,175,110,.12); color: var(--green); border: 1px solid rgba(76,175,110,.2); }
+  .ds-open { background: rgba(102,102,102,.1); color: var(--muted); border: 1px solid rgba(102,102,102,.15); }
+  .deuren-leeg { font-size: 12px; color: var(--muted); padding: 6px 0; }
+  .deuren-loading { font-size: 12px; color: var(--muted); padding: 6px 0; }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 </head>
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:14px">
+  <div style="display:flex;align-items:center;gap:14px;min-width:0;">
     <div class="logo">
       <div class="logo-bar"></div>
       <div>
@@ -710,6 +744,7 @@
         <div class="logo-sub">Projecten</div>
       </div>
     </div>
+    <div class="header-tools">
     <button class="wr-btn" onclick="toggleWR()" title="Winst & Risico berekening">
       <span class="wr-btn-title">OPSLAG</span>
       <span class="wr-btn-sub">berekening</span>
@@ -718,7 +753,12 @@
       <span class="wr-btn-title">STORAX</span>
       <span class="wr-btn-sub">bestelling</span>
     </a>
-  </div>
+    <a href="https://flixinc.github.io/deuren" target="_blank" class="wr-btn" style="text-decoration:none;" title="Deuren inmeet tool">
+      <span class="wr-btn-title">DEUREN</span>
+      <span class="wr-btn-sub">inmeten</span>
+    </a>
+  </div><!-- /header-tools -->
+  </div><!-- /logo+tools wrapper -->
   <div class="header-stats">
     <div class="stat" id="stat-lopend-wrap" onclick="setStatFilter('lopend')" title="Filter: Lopend"><div class="stat-num" id="stat-lopend">0</div><div class="stat-label">Lopend</div></div>
     <div class="stat" id="stat-wacht-wrap" onclick="setStatFilter('wacht')" title="Filter: Wacht"><div class="stat-num" id="stat-wacht">0</div><div class="stat-label">Wacht</div></div>
@@ -941,6 +981,20 @@
     <div class="actie-log" id="actie-log" style="display:none">
       <div class="actie-log-titel">Vorige acties</div>
       <div id="actie-log-items"></div>
+    </div>
+
+    <!-- DEUREN SECTIE (alleen bij bestaand project) -->
+    <div class="deuren-sectie" id="deuren-sectie" style="display:none">
+      <div class="deuren-header">
+        <div class="deuren-label">Deuren inmeten</div>
+        <a class="deuren-btn" id="deuren-tool-btn" href="#" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Inmeet tool openen
+        </a>
+      </div>
+      <div class="deuren-lijst" id="deuren-lijst">
+        <div class="deuren-loading">Laden…</div>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -1302,6 +1356,11 @@ function openModal(id) {
       c.classList.toggle('selected', c.textContent === (p.actie || ''));
     });
     toonLogo(p.opdrachtgever);
+    // Deuren sectie
+    const sectie = document.getElementById('deuren-sectie');
+    sectie.style.display = 'block';
+    document.getElementById('deuren-tool-btn').href = 'https://flixinc.github.io/deuren/?m=' + encodeURIComponent(p.nummer);
+    laadDeuren(p.nummer);
   } else {
     ['f-nummer','f-adres','f-ruimte','f-opdrachtgever','f-actie','f-contact','f-aanmelder','f-notitie'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('f-status').value = 'lopend';
@@ -1310,11 +1369,43 @@ function openModal(id) {
     renderActieLog([]);
     document.querySelectorAll('.actie-chip').forEach(c => c.classList.remove('selected'));
     toonLogo('');
+    document.getElementById('deuren-sectie').style.display = 'none';
   }
   document.getElementById('modal').classList.add('open');
 }
 
 function closeModal() { document.getElementById('modal').classList.remove('open'); editingId = null; }
+
+const DEUREN_TOOL_URL = 'https://flixinc.github.io/deuren/';
+
+async function laadDeuren(nummer) {
+  const lijst = document.getElementById('deuren-lijst');
+  lijst.innerHTML = '<div class="deuren-loading">Laden…</div>';
+  try {
+    const data = await sbFetch(`deuren?m_nummer=eq.${encodeURIComponent(nummer)}&order=deur_nr.asc`);
+    renderDeuren(data || []);
+  } catch(e) {
+    lijst.innerHTML = '<div class="deuren-leeg">Kon deuren niet laden.</div>';
+  }
+}
+
+function renderDeuren(deuren) {
+  const lijst = document.getElementById('deuren-lijst');
+  if (deuren.length === 0) {
+    lijst.innerHTML = '<div class="deuren-leeg">Nog geen deuren ingemeten voor dit project.</div>';
+    return;
+  }
+  lijst.innerHTML = deuren.map(d => {
+    const maat = d.breedte && d.hoogte ? `${d.breedte} × ${d.hoogte}` : '—';
+    const ing = d.status === 'ingemeten';
+    return `<div class="deuren-item">
+      <span class="deuren-item-nr">${d.deur_nr}</span>
+      <span class="deuren-item-naam">${d.naam || 'Deur ' + d.deur_nr}</span>
+      <span class="deuren-item-maat">${maat}</span>
+      <span class="deuren-item-status ${ing ? 'ds-ingemeten' : 'ds-open'}">${ing ? 'Ingemeten' : 'Open'}</span>
+    </div>`;
+  }).join('');
+}
 
 function agendaPunt() {
   const actie   = document.getElementById('f-actie').value.trim();
