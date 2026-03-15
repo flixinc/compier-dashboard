@@ -3,6 +3,7 @@
   "short_name": "Compier",
   "description": "Projectbeheer dashboard voor Compier",
   "start_url": "/compier-dashboard/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0e0e0e",
   "theme_color": "#e8611a",
