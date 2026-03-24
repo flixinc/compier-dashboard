@@ -176,15 +176,15 @@
   }
   .ral-search:focus { border-color: var(--orange); }
   .ral-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-    gap: 5px; max-height: 320px; overflow-y: auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 7px; max-height: 380px; overflow-y: auto;
   }
   .ral-swatch {
-    border-radius: 4px; cursor: pointer; border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.07);
     transition: transform .12s, border-color .12s; overflow: hidden;
   }
-  .ral-swatch:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.28); z-index: 1; position: relative; }
-  .ral-color { height: 44px; }
+  .ral-swatch:hover { transform: scale(1.03); border-color: rgba(255,255,255,0.28); z-index: 1; position: relative; }
+  .ral-color { height: 64px; }
   .ral-info { background: rgba(0,0,0,0.35); padding: 3px 5px; }
   .ral-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); }
   .ral-naam { font-size: 9px; color: rgba(255,255,255,0.55); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -901,9 +901,7 @@
       </div>
     </div>
   </div>
-  <button onclick="toggleApiBanner()" title="API instellingen" style="background:none;border:none;cursor:pointer;padding:0 6px;color:var(--muted);font-size:15px;line-height:1;transition:color 0.15s;" onmouseenter="this.style.color='var(--orange)'" onmouseleave="this.style.color='var(--muted)'">⚙</button>
   <button onclick="forceerVervers(event)" title="Ververs app" style="background:none;border:none;cursor:pointer;padding:0 6px;color:var(--muted);font-size:17px;line-height:1;transition:color 0.15s;" onmouseenter="this.style.color='var(--orange)'" onmouseleave="this.style.color='var(--muted)'">↺</button>
-  <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--border);padding:0 6px 0 2px;user-select:none;" title="Versie">v1.5</span>
 </div>
 <!-- View: Projecten -->
 <div id="view-projecten">
