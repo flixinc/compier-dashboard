@@ -1,7 +1,8 @@
 <!--
   ╔══════════════════════════════════════════════════════════════╗
-  ║  COMPIER — Projecten Dashboard                          ║
+  ║  COMPIER O&A — Projecten Dashboard                          ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  v1.6  2026-03-24  Klik op kleur opent vergroot detail-kaart ║
   ║  v1.5  2026-03-24  Farrow & Ball kleurencollectie toegevoegd ║
   ║  v1.4  2026-03-24  RAL kleurenkiezer toegevoegd             ║
   ║  v1.3  2026-03-24  Actie chips: Gereed melden toegevoegd,  ║
@@ -190,6 +191,20 @@
   .ral-naam { font-size: 9px; color: rgba(255,255,255,0.55); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ral-footer { display: flex; align-items: center; margin-top: 10px; min-height: 20px; }
   .ral-copied { font-size: 11px; color: var(--green); opacity: 0; transition: opacity .3s; }
+  /* Detail-kaart */
+  .ral-detail { display:none; position:absolute; inset:0; background:var(--surface); z-index:10; flex-direction:column; border-radius:4px; overflow:hidden; }
+  .ral-detail.open { display:flex; }
+  .ral-detail-color { flex:1; min-height:120px; }
+  .ral-detail-body { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+  .ral-detail-label { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:var(--text); }
+  .ral-detail-naam { font-size:14px; font-weight:600; color:var(--text); }
+  .ral-detail-hex { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); }
+  .ral-detail-actions { display:flex; gap:8px; margin-top:4px; }
+  .ral-detail-copy { flex:1; background:var(--orange); color:#fff; border:none; border-radius:5px; padding:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; transition:opacity .15s; }
+  .ral-detail-copy:hover { opacity:.85; }
+  .ral-detail-close { background:var(--bg); color:var(--muted); border:1px solid var(--border); border-radius:5px; padding:8px 12px; font-size:12px; cursor:pointer; transition:all .15s; }
+  .ral-detail-close:hover { border-color:var(--orange); color:var(--text); }
+  .ral-grid-wrap { position:relative; }
   .api-banner {
     background: rgba(var(--orange-rgb),0.08);
     border-bottom: 1px solid rgba(var(--orange-rgb),0.2);
@@ -866,7 +881,23 @@
       <button class="wr-close" onclick="toggleRAL()">✕</button>
     </div>
     <input type="text" class="ral-search" id="ral-search" placeholder="Zoek op nummer of naam…" oninput="renderRAL(this.value)">
-    <div class="ral-grid" id="ral-grid"></div>
+    <div class="ral-grid-wrap">
+      <div class="ral-grid" id="ral-grid"></div>
+      <div class="ral-detail" id="ral-detail">
+        <div class="ral-detail-color" id="ral-detail-color"></div>
+        <div class="ral-detail-body">
+          <div>
+            <div class="ral-detail-label" id="ral-detail-label"></div>
+            <div class="ral-detail-naam" id="ral-detail-naam"></div>
+            <div class="ral-detail-hex" id="ral-detail-hex"></div>
+          </div>
+          <div class="ral-detail-actions">
+            <button class="ral-detail-copy" onclick="kopieelRALDetail()">Kopieer naar klembord</button>
+            <button class="ral-detail-close" onclick="sluitRalDetail()">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="ral-footer"><span class="ral-copied" id="ral-copied"></span></div>
   </div>
 </div>
@@ -2052,7 +2083,7 @@ function renderRAL(q) {
     const lum=(r*299+g*587+b*114)/1000;
     const overlay = lum > 160 ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.3)';
     const label = _ralCol === 'fb' ? `No. ${nr}` : `RAL ${nr}`;
-    return `<div class="ral-swatch" onclick="kopieelRAL(${nr},\`${naam.replace(/`/g,"'")}\`)" title="${label} — ${naam}">
+    return `<div class="ral-swatch" onclick="openRalDetail(${nr},\`${naam.replace(/`/g,"'")}\`,\`${hex}\`)" title="${label} — ${naam}">
       <div class="ral-color" style="background:${hex}"></div>
       <div class="ral-info" style="background:${overlay}">
         <div class="ral-num">${label}</div>
@@ -2060,6 +2091,31 @@ function renderRAL(q) {
       </div>
     </div>`;
   }).join('') || '<div style="color:var(--muted);font-size:12px;padding:10px 0">Geen resultaten.</div>';
+}
+let _ralDetailData = null;
+function openRalDetail(nr, naam, hex) {
+  _ralDetailData = {nr, naam, hex};
+  const label = _ralCol === 'fb' ? `No. ${nr}` : `RAL ${nr}`;
+  document.getElementById('ral-detail-color').style.background = hex;
+  document.getElementById('ral-detail-label').textContent = label;
+  document.getElementById('ral-detail-naam').textContent = naam;
+  document.getElementById('ral-detail-hex').textContent = hex;
+  document.getElementById('ral-detail').classList.add('open');
+}
+function sluitRalDetail() {
+  document.getElementById('ral-detail').classList.remove('open');
+  _ralDetailData = null;
+}
+function kopieelRALDetail() {
+  if (!_ralDetailData) return;
+  const {nr, naam} = _ralDetailData;
+  const tekst = _ralCol === 'fb' ? `${naam} No. ${nr}` : `RAL ${nr} ${naam}`;
+  navigator.clipboard.writeText(tekst);
+  sluitRalDetail();
+  const el = document.getElementById('ral-copied');
+  el.textContent = `✓ ${tekst} gekopieerd`;
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 2200);
 }
 function kopieelRAL(nr, naam) {
   const tekst = _ralCol === 'fb' ? `${naam} No. ${nr}` : `RAL ${nr} ${naam}`;
