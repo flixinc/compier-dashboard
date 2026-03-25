@@ -2,6 +2,7 @@
   ╔══════════════════════════════════════════════════════════════╗
   ║  COMPIER O&A — Projecten Dashboard                          ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  v1.7  2026-03-24  Actiedatum met tijdkeuze, timed ICS event  ║
   ║  v1.6  2026-03-24  Klik op kleur opent vergroot detail-kaart ║
   ║  v1.5  2026-03-24  Farrow & Ball kleurencollectie toegevoegd ║
   ║  v1.4  2026-03-24  RAL kleurenkiezer toegevoegd             ║
@@ -582,6 +583,41 @@
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  /* ── Login screen ────────────────────────── */
+  #login-screen {
+    position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 40px; width: 100%; max-width: 380px;
+  }
+  .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .login-brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); flex-shrink: 0; }
+  .login-brand-name { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 15px; letter-spacing: 0.06em; color: var(--text); }
+  .login-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .login-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+  .login-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .login-field label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .login-field input {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 12px; color: var(--text); font-size: 13px;
+    font-family: 'IBM Plex Sans', sans-serif; outline: none; transition: border-color 0.15s;
+  }
+  .login-field input:focus { border-color: var(--orange); }
+  .login-setup-section { border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 16px; }
+  .login-setup-label { font-size: 11px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+  .login-btn {
+    width: 100%; padding: 11px; background: var(--orange); border: none;
+    border-radius: 7px; color: #fff; font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer;
+    transition: background 0.15s; margin-top: 8px;
+  }
+  .login-btn:hover:not(:disabled) { background: var(--orange-dim); }
+  .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-error { margin-top: 12px; font-size: 12px; color: var(--red); min-height: 16px; text-align: center; }
+  .logout-btn { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; padding: 0 6px; line-height: 1; transition: color 0.15s; }
+  .logout-btn:hover { color: var(--red); }
   /* ── Tab nav ─────────────────────────────── */
   .tab-nav {
     display: flex;
@@ -901,6 +937,29 @@
     <div class="ral-footer"><span class="ral-copied" id="ral-copied"></span></div>
   </div>
 </div>
+<!-- ── Login scherm ──────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-dot"></div>
+      <div class="login-brand-name">COMPIER</div>
+    </div>
+    <div class="login-title">Inloggen</div>
+    <div class="login-sub">Dashboard — alleen voor bevoegde gebruikers</div>
+    <div id="login-setup" style="display:none">
+      <div class="login-setup-section">
+        <div class="login-setup-label">Eerste keer? Vul je Supabase-gegevens in.</div>
+        <div class="login-field"><label>Supabase URL</label><input type="text" id="login-sb-url" placeholder="https://xyz.supabase.co" autocomplete="off"></div>
+        <div class="login-field"><label>Supabase Key</label><input type="password" id="login-sb-key" placeholder="eyJ…" autocomplete="off"></div>
+      </div>
+    </div>
+    <div class="login-field"><label>E-mailadres</label><input type="email" id="login-email" placeholder="jouw@email.nl" autocomplete="email"></div>
+    <div class="login-field"><label>Wachtwoord</label><input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Inloggen</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+<!-- ── Instellingen banner ───────────────────────────────── -->
 <div class="api-banner">
   <label>Claude</label>
   <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off">
@@ -933,6 +992,7 @@
     </div>
   </div>
   <button onclick="forceerVervers(event)" title="Ververs app" style="background:none;border:none;cursor:pointer;padding:0 6px;color:var(--muted);font-size:17px;line-height:1;transition:color 0.15s;" onmouseenter="this.style.color='var(--orange)'" onmouseleave="this.style.color='var(--muted)'">↺</button>
+  <button class="logout-btn" onclick="logoutUser()" title="Uitloggen">⎋</button>
 </div>
 <!-- View: Projecten -->
 <div id="view-projecten">
@@ -1064,8 +1124,8 @@
         </div>
       </div>
       <div class="form-group" id="datum-sectie">
-        <label>Actiedatum</label>
-        <input type="date" id="f-datum">
+        <label>Datum &amp; tijd</label>
+        <input type="datetime-local" id="f-datum">
       </div>
     </div>
     <div class="actie-log" id="actie-log" style="display:none">
@@ -1119,19 +1179,114 @@ let sortDir = 1;
 let apiKey = localStorage.getItem('compier_api_key') || '';
 let sbUrl = localStorage.getItem('compier_sb_url') || '';
 let sbKey = localStorage.getItem('compier_sb_key') || '';
-// TODO SECURITY: Row Level Security (RLS) inschakelen via Supabase SQL editor:
-// ALTER TABLE projecten ENABLE ROW LEVEL SECURITY;
-// CREATE POLICY "alleen ingelogde gebruikers" ON projecten
-//   FOR ALL USING (auth.role() = 'authenticated');
-// Daarna: authenticatie toevoegen via supabase.auth.signInWithPassword()
-// en Authorization header meesturen bij elke fetch naar Supabase.
-// ── Supabase ──────────────────────────────────────────────
+// ── Auth state ────────────────────────────────────────────
+let sbAccessToken  = '';
+let sbRefreshToken = '';
+let sbTokenExpiry  = 0;
+// ── Auth functies ─────────────────────────────────────────
+async function initAuth() {
+  const stored = JSON.parse(localStorage.getItem('compier_session') || 'null');
+  if (stored?.access_token) {
+    sbAccessToken  = stored.access_token;
+    sbRefreshToken = stored.refresh_token;
+    sbTokenExpiry  = stored.expires_at || 0;
+    if (Date.now() / 1000 < sbTokenExpiry - 60) {
+      toonApp(); return;
+    }
+    if (await vernieuwSession()) { toonApp(); return; }
+  }
+  toonLoginScherm();
+}
+async function doLogin() {
+  const emailEl    = document.getElementById('login-email');
+  const passEl     = document.getElementById('login-password');
+  const errorEl    = document.getElementById('login-error');
+  const btn        = document.querySelector('.login-btn');
+  const email      = emailEl.value.trim();
+  const password   = passEl.value;
+  // Haal setup-velden op als sbUrl/sbKey nog niet zijn ingesteld
+  if (!sbUrl || !sbKey) {
+    sbUrl = (document.getElementById('login-sb-url')?.value || '').trim().replace(/\/+$/, '');
+    sbKey = (document.getElementById('login-sb-key')?.value || '').trim();
+    if (sbUrl) localStorage.setItem('compier_sb_url', sbUrl);
+    if (sbKey) localStorage.setItem('compier_sb_key', sbKey);
+  }
+  if (!sbUrl || !sbKey) { document.getElementById('login-setup').style.display = 'block'; errorEl.textContent = 'Vul eerst de Supabase URL en Key in.'; return; }
+  if (!email || !password) { errorEl.textContent = 'Vul e-mail en wachtwoord in.'; return; }
+  errorEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Bezig…';
+  try {
+    const res = await fetch(sbUrl + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error_description || err.msg || 'E-mail of wachtwoord onjuist.');
+    }
+    const data = await res.json();
+    slaSessionOp(data);
+    toonApp();
+  } catch(e) {
+    errorEl.textContent = e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Inloggen';
+  }
+}
+async function vernieuwSession() {
+  if (!sbRefreshToken || !sbUrl || !sbKey) return false;
+  try {
+    const res = await fetch(sbUrl + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { 'apikey': sbKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: sbRefreshToken })
+    });
+    if (!res.ok) return false;
+    slaSessionOp(await res.json());
+    return true;
+  } catch(e) { return false; }
+}
+function slaSessionOp(data) {
+  sbAccessToken  = data.access_token;
+  sbRefreshToken = data.refresh_token;
+  sbTokenExpiry  = Math.floor(Date.now() / 1000) + (data.expires_in || 3600);
+  localStorage.setItem('compier_session', JSON.stringify({
+    access_token: sbAccessToken, refresh_token: sbRefreshToken, expires_at: sbTokenExpiry
+  }));
+}
+async function logoutUser() {
+  if (!confirm('Uitloggen?')) return;
+  try {
+    await fetch(sbUrl + '/auth/v1/logout', {
+      method: 'POST',
+      headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbAccessToken }
+    });
+  } catch(e) {}
+  sbAccessToken = ''; sbRefreshToken = ''; sbTokenExpiry = 0;
+  localStorage.removeItem('compier_session');
+  toonLoginScherm();
+}
+function toonLoginScherm() {
+  document.getElementById('login-screen').style.display = 'flex';
+  if (!sbUrl || !sbKey) document.getElementById('login-setup').style.display = 'block';
+}
+function toonApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  initApiKey();
+  laadProjecten();
+}
+// ── Supabase data ─────────────────────────────────────────
 async function sbFetch(path, method = 'GET', body = null) {
+  // Vernieuw token als het bijna vervalt
+  if (sbAccessToken && Date.now() / 1000 > sbTokenExpiry - 60) {
+    await vernieuwSession();
+  }
   const opts = {
     method,
     headers: {
       'apikey': sbKey,
-      'Authorization': 'Bearer ' + sbKey,
+      'Authorization': 'Bearer ' + (sbAccessToken || sbKey),
       'Content-Type': 'application/json',
       'Prefer': method === 'POST' ? 'return=representation' : ''
     }
@@ -1292,7 +1447,14 @@ function dateClass(ds) {
 }
 function fmt(ds) {
   if (!ds) return '';
-  const [y,m,d] = ds.split('-');
+  // Ondersteunt zowel 'YYYY-MM-DD' als 'YYYY-MM-DDTHH:MM'
+  const hasTime = ds.includes('T');
+  const datePart = ds.slice(0, 10);
+  const [y, m, d] = datePart.split('-');
+  if (hasTime) {
+    const time = ds.slice(11, 16);
+    return `${d}-${m}-${y} ${time}`;
+  }
   return `${d}-${m}-${y}`;
 }
 function render() {
@@ -1454,24 +1616,32 @@ function agendaPunt() {
   const adres   = document.getElementById('f-adres').value.trim();
   const notitie = document.getElementById('f-notitie').value.trim();
   if (!actie) { alert('Vul eerst een volgende actie in.'); return; }
-  if (!datum) { alert('Vul eerst een actiedatum in.'); return; }
-  // Datum naar YYYYMMDD
-  const d = datum.replace(/-/g, '');
-  // Volgende dag voor DTEND (hele dag event vereist)
-  const nextDay = new Date(datum);
-  nextDay.setDate(nextDay.getDate() + 1);
-  const dEnd = nextDay.toISOString().slice(0,10).replace(/-/g,'');
+  if (!datum) { alert('Vul eerst een datum in.'); return; }
+  const hasTime = datum.includes('T') && datum.length > 10;
   const titel = (nummer ? nummer + ' — ' : '') + actie;
   const omschrijving = [adres, notitie].filter(Boolean).join('\n').replace(/\n/g, '\\n');
   const uid = Date.now() + '@compier';
+  // ICS datumstrings
+  let dtStart, dtEnd;
+  if (hasTime) {
+    // Timed event: YYYYMMDDTHHMMSS
+    dtStart = datum.slice(0,16).replace(/[-:T]/g, (c) => c === 'T' ? 'T' : '') + '00';
+    const endDate = new Date(datum); endDate.setHours(endDate.getHours() + 1);
+    dtEnd = endDate.toISOString().slice(0,16).replace(/[-:T]/g, (c) => c === 'T' ? 'T' : '') + '00';
+  } else {
+    // Hele dag event
+    dtStart = 'VALUE=DATE:' + datum.replace(/-/g,'');
+    const nextDay = new Date(datum); nextDay.setDate(nextDay.getDate() + 1);
+    dtEnd = 'VALUE=DATE:' + nextDay.toISOString().slice(0,10).replace(/-/g,'');
+  }
   const ics = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//Compier//Dashboard//NL',
     'BEGIN:VEVENT',
     'UID:' + uid,
-    'DTSTART;VALUE=DATE:' + d,
-    'DTEND;VALUE=DATE:' + dEnd,
+    hasTime ? 'DTSTART:' + dtStart : 'DTSTART;' + dtStart,
+    hasTime ? 'DTEND:' + dtEnd   : 'DTEND;'   + dtEnd,
     'SUMMARY:' + titel,
     omschrijving ? 'DESCRIPTION:' + omschrijving : '',
     adres ? 'LOCATION:' + adres : '',
@@ -2127,8 +2297,7 @@ function kopieelRAL(nr, naam) {
 }
 // ─────────────────────────────────────────────────────────
 initAccentSwatches();
-initApiKey();
-if (sbUrl && sbKey) laadProjecten(); else render();
+initAuth(); // start met auth check — laadProjecten() wordt aangeroepen vanuit toonApp()
 // PWA Service Worker
 async function forceerVervers(e) {
   const btn = e.currentTarget;
