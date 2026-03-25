@@ -1,7 +1,8 @@
 <!--
   ╔══════════════════════════════════════════════════════════════╗
-  ║  COMPIER O&A — Projecten Dashboard                          ║
+  ║  COMPIER — Projecten Dashboard                              ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  v1.8  2026-03-25  Auth, betere RAL Lab-kleuren, bugfixes      ║
   ║  v1.7  2026-03-24  Actiedatum met tijdkeuze, timed ICS event  ║
   ║  v1.6  2026-03-24  Klik op kleur opent vergroot detail-kaart ║
   ║  v1.5  2026-03-24  Farrow & Ball kleurencollectie toegevoegd ║
@@ -505,7 +506,7 @@
   .form-group { display: flex; flex-direction: column; gap: 4px; }
   .form-group.full { grid-column: 1 / -1; }
   label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
-  input[type=text], input[type=date], select, textarea {
+  input[type=text], input[type=date], input[type=datetime-local], select, textarea {
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
@@ -517,8 +518,9 @@
     transition: border-color 0.2s;
     width: 100%;
     -webkit-appearance: none;
+    color-scheme: dark;
   }
-  input[type=text]:focus, input[type=date]:focus, select:focus, textarea:focus { border-color: var(--orange); }
+  input[type=text]:focus, input[type=date]:focus, input[type=datetime-local]:focus, select:focus, textarea:focus { border-color: var(--orange); }
   select option { background: var(--surface2); }
   textarea { resize: vertical; min-height: 56px; }
   #f-notitie { min-height: 120px; }
@@ -1544,6 +1546,7 @@ function openModal(id) {
   document.getElementById('ai-loading').classList.remove('show');
   if (id) {
     const p = projecten.find(x => x.id === id);
+    if (!p) { console.warn('openModal: project niet gevonden voor id', id); return; }
     document.getElementById('f-nummer').value = p.nummer;
     document.getElementById('f-adres').value = p.adres;
     document.getElementById('f-ruimte').value = p.ruimte || '';
@@ -1773,9 +1776,9 @@ async function saveProject() {
   closeModal();
   render();
 }
-function deleteProject() {
+async function deleteProject() {
   if (!confirm('Project verwijderen?')) return;
-  verwijderUitDb(editingId);
+  await verwijderUitDb(editingId);
   projecten = projecten.filter(x => x.id !== editingId);
   closeModal();
   render();
@@ -2111,80 +2114,78 @@ function toggleTheme(isLight) {
 })();
 // ── RAL Kleuren ──────────────────────────────────────────
 const RAL_DB=[
-  [1000,'Groenbeige','#BEBD7F'],[1001,'Beige','#C2B078'],[1002,'Zandgeel','#C6A664'],
-  [1003,'Signaalgeel','#E5BE01'],[1004,'Goudgeel','#CDA434'],[1005,'Honinggeel','#A98307'],
-  [1006,'Maisgeel','#E4A010'],[1007,'Narcissengeel','#DC9D00'],[1011,'Bruinbeige','#8A6642'],
-  [1012,'Citroengeel','#C7B446'],[1013,'Parelwit','#EAE6CA'],[1014,'Ivoor','#E1CC4F'],
-  [1015,'Lichtivoor','#E6D690'],[1016,'Zwavengeel','#EDFF21'],[1017,'Saffraangeel','#F5D033'],
-  [1018,'Zinkgeel','#F8F32B'],[1019,'Grijsbeige','#9E9764'],[1020,'Olijfgeel','#999950'],
-  [1021,'Koolzaadgeel','#F3DA0B'],[1023,'Verkeersgeel','#FAD201'],[1024,'Okergeel','#AEA04B'],
-  [1026,'Briljantgeel','#FFFF00'],[1027,'Currygeel','#9D9101'],[1028,'Meloengeel','#F4A900'],
-  [1032,'Bremgeel','#D6AE01'],[1033,'Dahliageel','#F3A505'],[1034,'Pastelgeel','#EFA94A'],
-  [1035,'Parelbeige','#6A5D4D'],[1036,'Parelgoud','#705335'],[1037,'Zonnegeel','#F39F18'],
-  [2000,'Geeloranje','#ED760E'],[2001,'Roodoranje','#C93C20'],[2002,'Vermiljoen','#CB2821'],
-  [2003,'Pasteloranje','#FF7514'],[2004,'Zuiver oranje','#F44611'],[2005,'Briljantoranje','#FF2301'],
-  [2007,'Briljantlichtoranje','#FFA420'],[2008,'Helderlichtoranje','#F75E25'],[2009,'Verkeersoranje','#F54021'],
-  [2010,'Signaloranje','#D84B20'],[2011,'Dieporanje','#EC7C26'],[2012,'Zalmoranje','#E55137'],
-  [2013,'Parloranje','#C35831'],
-  [3000,'Vuurrood','#AF2B1E'],[3001,'Signaalrood','#A52019'],[3002,'Karmijnrood','#A2231D'],
-  [3003,'Robijnrood','#9B111E'],[3004,'Purperrood','#75151E'],[3005,'Wijnrood','#5E2129'],
-  [3007,'Zwart-rood','#412227'],[3009,'Oxiderood','#642424'],[3011,'Bruinrood','#781F19'],
-  [3012,'Beigerood','#C1876B'],[3013,'Tomaatrood','#A12312'],[3014,'Antiekroze','#D36E70'],
-  [3015,'Lichtroze','#EA899A'],[3016,'Koraalrood','#B32821'],[3017,'Roze','#E63244'],
-  [3018,'Aardbeirood','#D53032'],[3020,'Verkeersrood','#CC0605'],[3022,'Zalmroze','#D95030'],
-  [3024,'Briljantroood','#F80000'],[3026,'Briljantlichtroood','#FE0000'],[3027,'Frambozenrood','#C51D34'],
-  [3028,'Zuiverroood','#CB3234'],[3031,'Oriëntrood','#B32428'],[3032,'Parelrobijnrood','#721422'],
-  [3033,'Parloranje-rood','#B44C43'],
-  [4001,'Roodlila','#6D3F5B'],[4002,'Roodviolet','#922B3E'],[4003,'Heideroze','#DE4C8A'],
-  [4004,'Bordeauxviolet','#641C34'],[4005,'Blauwlila','#6C4675'],[4006,'Verkeerspaars','#A03472'],
-  [4007,'Purperviolet','#4A192C'],[4008,'Signaalviolet','#924E7D'],[4009,'Pasteellila','#A18594'],
-  [4010,'Telemagenta','#CF3476'],[4011,'Parlelila','#8673A1'],[4012,'Parelbraambes','#6C6874'],
-  [5000,'Violetblauw','#354D73'],[5001,'Groenblauw','#1F3438'],[5002,'Ultramarijnblauw','#20214F'],
-  [5003,'Saffierblauw','#1D1E33'],[5004,'Zwartblauw','#18171C'],[5005,'Signaalblauw','#1E2460'],
-  [5007,'Briljantblauw','#3E5F8A'],[5008,'Grijsblauw','#26252D'],[5009,'Azuurblauw','#025669'],
-  [5010,'Gentiaanblauw','#0E294B'],[5011,'Staalblauw','#231A24'],[5012,'Lichtblauw','#3B83BD'],
-  [5013,'Kobaltblauw','#1E213D'],[5014,'Duivenblauw','#606E8C'],[5015,'Hemelsblauw','#2271B3'],
-  [5017,'Verkeersblauw','#063971'],[5018,'Turkooisgroen','#3F888F'],[5019,'Capriblauw','#1B5583'],
-  [5020,'Oceaanblauw','#1D334A'],[5021,'Waterblauw','#256D7B'],[5022,'Nachtblauw','#252850'],
-  [5023,'Vergeet-mij-niet','#49678D'],[5024,'Pastelblauw','#5D9B9B'],[5025,'Parlelichtblauw','#2A6478'],
-  [5026,'Parelnachtblauw','#102C54'],
-  [6000,'Patinagroen','#316650'],[6001,'Smaragdgroen','#287233'],[6002,'Bladgroen','#2D572C'],
-  [6003,'Olijfgroen','#424632'],[6004,'Blauwgroen','#1F3A3D'],[6005,'Mosgroen','#2F4538'],
-  [6006,'Grijsolijf','#3E3B32'],[6007,'Flessegroen','#343B29'],[6008,'Bruingroen','#39352A'],
-  [6009,'Dennengroen','#31372B'],[6010,'Grasgroen','#35682D'],[6011,'Resedagroen','#587246'],
-  [6012,'Zwartgroen','#343E40'],[6013,'Rietgroen','#6C7156'],[6014,'Geelolijf','#47402E'],
-  [6015,'Zwartolijf','#3B3C36'],[6016,'Turkooisgroen','#1E5945'],[6017,'Maigroen','#4C9141'],
-  [6018,'Geelgroen','#57A639'],[6019,'Witgroen','#BDECB6'],[6020,'Chroomoxydegroen','#2E3A23'],
-  [6021,'Bleekgroen','#89AC76'],[6022,'Olijfdrab','#25221B'],[6024,'Verkeersgroen','#308446'],
-  [6025,'Varegroen','#3D642D'],[6026,'Opalgroen','#015D52'],[6027,'Lichtgroen','#84C3BE'],
-  [6028,'Pijnboomgroen','#2C5545'],[6029,'Mintgroen','#20603D'],[6032,'Signaalgroen','#317F43'],
-  [6033,'Mintturkoois','#497E76'],[6034,'Pastelturkoois','#7FB5B5'],[6035,'Parleegroen','#1C542D'],
-  [6036,'Parleopalgroen','#193737'],[6037,'Zuivergroen','#008F39'],[6038,'Briljantgroen','#00BB2D'],
-  [7000,'Eekhoorngrijs','#78858B'],[7001,'Zilvergrijs','#8A9597'],[7002,'Olijfgrijs','#817F68'],
-  [7003,'Mosgrijs','#6C7059'],[7004,'Signaalgrijs','#969992'],[7005,'Muisgrijs','#646B63'],
-  [7006,'Beigegrijs','#6D6552'],[7008,'Khakygrijs','#6A5F31'],[7009,'Groenbergrijs','#4D5645'],
-  [7010,'Tentgrijs','#4C514A'],[7011,'IJzergrijs','#434B4D'],[7012,'Basaltgrijs','#4E5754'],
-  [7013,'Bruingrijs','#464531'],[7015,'Leisteengrijs','#434750'],[7016,'Antracietgrijs','#293133'],
-  [7021,'Zwartgrijs','#23282B'],[7022,'Ombergrijs','#332F2C'],[7023,'Betongrijs','#787368'],
-  [7024,'Grafietgrijs','#474A51'],[7026,'Granietgrijs','#2F353B'],[7030,'Steengrijs','#8B8C7A'],
-  [7031,'Blauwgrijs','#474B4E'],[7032,'Kiezelgrijs','#B8B799'],[7033,'Cementgrijs','#7D8471'],
-  [7034,'Geelgrijs','#8F8B66'],[7035,'Lichtgrijs','#D7D7D7'],[7036,'Platinumgrijs','#7F7679'],
-  [7037,'Stofgrijs','#7D7F7D'],[7038,'Achatgrijs','#B5B8B1'],[7039,'Kwartsgrijs','#6C6960'],
-  [7040,'Venstergrijs','#9DA1AA'],[7042,'Verkeersgrijs A','#8D948D'],[7043,'Verkeersgrijs B','#4E5452'],
-  [7044,'Zijdegrijs','#CAC4B0'],[7045,'Telegrijs 1','#909090'],[7046,'Telegrijs 2','#82898F'],
-  [7047,'Telegrijs 4','#D0D0D0'],[7048,'Parlesmuisgrijs','#898176'],
-  [8000,'Groenberge','#826C34'],[8001,'Okerbruin','#955F20'],[8002,'Signaalbruin','#6C3B2A'],
-  [8003,'Leembruin','#734222'],[8004,'Koperbruin','#8E402A'],[8007,'Hertvelbruin','#59351F'],
-  [8008,'Olijfbruin','#6F4F28'],[8009,'Elfenbeenbruin','#5B3A29'],[8010,'Tentbruin','#592321'],
-  [8011,'Nootbruin','#53422E'],[8012,'Roodbruin','#57160E'],[8014,'Sepiabruin','#3F3002'],
-  [8015,'Kastanjebruin','#58270B'],[8016,'Mahoniebruin','#4C2F27'],[8017,'Chocoladebruin','#45170D'],
-  [8019,'Grijsbruin','#403A3A'],[8022,'Zwartbruin','#212121'],[8023,'Oranjebruin','#A65E2E'],
-  [8024,'Beigebruin','#79553D'],[8025,'Bleekbruin','#755C48'],[8028,'Terrabruin','#4E3B31'],
-  [9001,'Cremewit','#FDF4E3'],[9002,'Grijswit','#E7EBDA'],[9003,'Signaalwit','#F4F4F4'],
-  [9004,'Signaalzwart','#282828'],[9005,'Gitzwart','#0A0A0A'],[9006,'Witalu','#A5A5A5'],
-  [9007,'Grijsalu','#8F8F8F'],[9010,'Zuiverwit','#FFFFFF'],[9011,'Grafietwit','#1C1C1C'],
-  [9012,'Reinwit','#F1F1F1'],[9016,'Verkeerswit','#F6F6F6'],[9017,'Verkeerszwart','#1E1E1E'],
-  [9018,'Papyruswit','#CFD3CD'],[9022,'Parlelichtgrijs','#9E9E9E'],[9023,'Parledonkergrijs','#827E7C'],
+  [1000,'Groenbeige','#CDBA88'],[1001,'Beige','#D0B084'],[1002,'Zandgeel','#D3AA6D'],
+  [1003,'Signaalgeel','#F9A800'],[1004,'Goudgeel','#E49E00'],[1005,'Honinggeel','#CB8E00'],
+  [1006,'Maisgeel','#EE9D00'],[1007,'Narcissengeel','#EE9C00'],[1011,'Bruinbeige','#A07A4A'],
+  [1012,'Citroengeel','#E6C14F'],[1013,'Parelwit','#EFE5D3'],[1014,'Ivoor','#F0CE8F'],
+  [1015,'Lichtivoor','#EED9B0'],[1016,'Zwavengeel','#FFEF36'],[1017,'Saffraangeel','#FFC846'],
+  [1018,'Zinkgeel','#FFEA33'],[1019,'Grijsbeige','#A1906E'],[1020,'Olijfgeel','#A1905C'],
+  [1021,'Koolzaadgeel','#FFCD19'],[1023,'Verkeersgeel','#FFCB15'],[1024,'Okergeel','#C99C58'],
+  [1026,'Briljantgeel','#FFF722'],[1027,'Currygeel','#AE8829'],[1028,'Meloengeel','#F4A61E'],
+  [1032,'Bremgeel','#F3B320'],[1033,'Dahliageel','#F6A323'],[1034,'Pastelgeel','#F3AE5B'],
+  [1035,'Parelbeige','#725D4A'],[1036,'Parelgoud','#6B5034'],[1037,'Zonnegeel','#F59E2A'],
+  [2000,'Geeloranje','#DB6E00'],[2001,'Roodoranje','#B04321'],[2002,'Vermiljoen','#BB3628'],
+  [2003,'Pasteloranje','#F2760E'],[2004,'Zuiver oranje','#EC5216'],[2005,'Briljantoranje','#ED3F15'],
+  [2007,'Briljantlichtoranje','#FF9422'],[2008,'Helderlichtoranje','#F0651A'],[2009,'Verkeersoranje','#EA4B1A'],
+  [2010,'Signaloranje','#C44B28'],[2011,'Dieporanje','#EB7516'],[2012,'Zalmoranje','#D05840'],
+  [2013,'Parloranje','#A64C3C'],[3000,'Vuurrood','#A72920'],[3001,'Signaalrood','#9E231A'],
+  [3002,'Karmijnrood','#9E201C'],[3003,'Robijnrood','#8C1724'],[3004,'Purperrood','#7A1825'],
+  [3005,'Wijnrood','#641C26'],[3007,'Zwart-rood','#471F23'],[3009,'Oxiderood','#7A2B2A'],
+  [3011,'Bruinrood','#842424'],[3012,'Beigerood','#C97F6E'],[3013,'Tomaatrood','#9A2522'],
+  [3014,'Antiekroze','#BD6F70'],[3015,'Lichtroze','#D8ACB1'],[3016,'Koraaltje rood','#BD4231'],
+  [3017,'Roze','#D96A6A'],[3018,'Aardbeirood','#CA4046'],[3020,'Verkeersrood','#C03126'],
+  [3022,'Zalm-rood','#D57463'],[3024,'Briljant rood','#E93B32'],[3026,'Briljantlicht rood','#F04632'],
+  [3027,'Framboosrood','#AA2A3B'],[3028,'Zuiver rood','#C73025'],[3031,'Oriënt rood','#A32C2E'],
+  [3032,'Parelborstelrood','#942A23'],[3033,'Parloze roze','#C2584E'],[4001,'Roodlila','#816083'],
+  [4002,'Roodviolet','#8A415E'],[4003,'Heideroze','#BD608F'],[4004,'Bordeauxviolet','#5D2A42'],
+  [4005,'Blauwlila','#6A6B92'],[4006,'Verkeerspaars','#913569'],[4007,'Purperviolet','#4B2A45'],
+  [4008,'Signaalviolet','#8C4476'],[4009,'Pastellilla','#AC8DA4'],[4010,'Telemagenta','#BC477A'],
+  [4011,'Parel doorschijnend lila','#7E789A'],[4012,'Parel braambes','#6E6D89'],[5000,'Violetblauw','#1D5179'],
+  [5001,'Groenblauw','#024E6B'],[5002,'Ultramarijnblauw','#003F87'],[5003,'Saffier blauw','#21405E'],
+  [5004,'Zwartblauw','#222B3D'],[5005,'Signaalblauw','#005289'],[5007,'Briljant blauw','#2E678E'],
+  [5008,'Grijs blauw','#344D61'],[5009,'Azuurblauw','#1E6580'],[5010,'Gentiaanblauw','#084C80'],
+  [5011,'Staalblauw','#21324A'],[5012,'Lichtblauw','#3B8FBA'],[5013,'Kobaltblauw','#1F416E'],
+  [5014,'Duivenblauw','#5683A0'],[5015,'Hemelsblauw','#007CB0'],[5017,'Verkeersblauw','#005F89'],
+  [5018,'Turkooisgroen','#31858E'],[5019,'Capriblauw','#015D7D'],[5020,'Oceaanblauw','#184756'],
+  [5021,'Waterblauw','#1D7386'],[5022,'Nachtblauw','#203556'],[5023,'Verre blauw','#446D8E'],
+  [5024,'Pastelblauw','#669EB8'],[5025,'Parel gentiaanblauw','#3A6183'],[5026,'Parel nacht blauw','#29405B'],
+  [6000,'Patinalroen','#3B7460'],[6001,'Smaragdgroen','#316541'],[6002,'Bladgroen','#32613F'],
+  [6003,'Olijfgroen','#576247'],[6004,'Blauwgroen','#26504B'],[6005,'Mosgroen','#33523D'],
+  [6006,'Grijs olijf','#505645'],[6007,'Flessegroen','#364A36'],[6008,'Bruingroen','#3E4536'],
+  [6009,'Dennengroen','#31493C'],[6010,'Grasgroen','#496F3F'],[6011,'Resedagroen','#6E875F'],
+  [6012,'Zwartgroen','#394B44'],[6013,'Rietgroen','#878961'],[6014,'Geelgroen','#625D4C'],
+  [6015,'Zwart olijfgroen','#464B41'],[6016,'Turkooisgroen','#367863'],[6017,'Geelgroen','#5E8348'],
+  [6018,'Geelgroen licht','#729548'],[6019,'Witgroen','#C0CDA5'],[6020,'Chroomoxydegroen','#37412F'],
+  [6021,'Bleekgroen','#8BA17A'],[6022,'Olijfgroen donker','#4D513F'],[6024,'Verkeersgroen','#387C5E'],
+  [6025,'Varngroen','#5C7946'],[6026,'Opaakgroen','#2C4F45'],[6027,'Lichtgroen','#8EBCAB'],
+  [6028,'Dennengroen','#3F5541'],[6029,'Mintgroen','#3D805A'],[6032,'Signaalgroen','#3E7D58'],
+  [6033,'Mintturkoois','#458883'],[6034,'Pastelturkoois','#78AAAB'],[6035,'Parelgroen','#3A573B'],
+  [6036,'Parel opaakgroen','#39675F'],[6037,'Zuiver groen','#277E4E'],[6038,'Briljant groen','#289050'],
+  [7000,'Pijlstaartgrijs','#7A888E'],[7001,'Zilvergrijs','#959CA1'],[7002,'Olijfgrijs','#918979'],
+  [7003,'Mosgrijs','#827F72'],[7004,'Signaalgrijs','#9A9B9C'],[7005,'Muisgrijs','#7D7E7B'],
+  [7006,'Beigegrijs','#7F7367'],[7008,'Kaki grijs','#7C6951'],[7009,'Groenbeigrijs','#6A695E'],
+  [7010,'Tentgrijs','#66655E'],[7011,'Ijzergrijs','#5D6063'],[7012,'Bazaltgrijs','#626664'],
+  [7013,'Bruingrijs','#6C6155'],[7015,'Leisteengrijs','#555960'],[7016,'Antracietgrijs','#464A4D'],
+  [7021,'Zwartgrijs','#3D3E41'],[7022,'Ombergrijs','#615D59'],[7023,'Betongrijs','#80807C'],
+  [7024,'Grafietgrijs','#4F5358'],[7026,'Granietgrijs','#4D5152'],[7030,'Steengrijs','#969087'],
+  [7031,'Blauwgrijs','#5F6A6E'],[7032,'Kiezelsteen grijs','#B5AD9D'],[7033,'Cementgrijs','#898E86'],
+  [7034,'Geelgrijs','#ADA08C'],[7035,'Lichtgrijs','#C2C1BF'],[7036,'Platinumgrijs','#95979A'],
+  [7037,'Stofgrijs','#919392'],[7038,'Agaatgrijs','#ACACAA'],[7039,'Kwartsgrijs','#7E7C78'],
+  [7040,'Venstergrijs','#9DA2A6'],[7042,'Verkeersgrijs A','#A5A7A7'],[7043,'Verkeersgrijs B','#727375'],
+  [7044,'Zijdegrijs','#B8B6B2'],[7045,'Telegrijs 1','#A2A5A6'],[7046,'Telegrijs 2','#8C9092'],
+  [7047,'Telegrijs 4','#B3B4B3'],[7048,'Parel muisgrijs','#86837E'],[8000,'Geel bruin','#8A693F'],
+  [8001,'Okra bruin','#A46835'],[8002,'Signaalbruin','#744946'],[8003,'Leembruin','#885939'],
+  [8004,'Koperbruin','#96573D'],[8007,'Reebruin','#7A533E'],[8008,'Olijfbruin','#7A5B3E'],
+  [8009,'Hazelnootbruin','#65483B'],[8010,'Tenthuid','#6E4A3E'],[8011,'Notabruin','#543F37'],
+  [8012,'Roodbruin','#69413E'],[8014,'Sepia bruin','#523E34'],[8015,'Kastanjebruin','#613838'],
+  [8016,'Mahognibruin','#543B39'],[8017,'Chocoladebruin','#4B3A38'],[8019,'Grijs bruin','#49413F'],
+  [8022,'Zwart bruin','#2B2A29'],[8023,'Oranje bruin','#9C5E3D'],[8024,'Beigebruin','#8E6348'],
+  [8025,'Bleekbruin','#8F6D58'],[8028,'Terrabruin','#6A5040'],[8029,'Parelkoperen','#7A4E3E'],
+  [9001,'Crèmewit','#F0E6D9'],[9002,'Grijswit','#E2DED7'],[9003,'Signaalwit','#ECECE7'],
+  [9004,'Signaalkzwart','#3B3C3C'],[9005,'Gitzwart','#0D0E10'],[9006,'Witalu','#9D9FA0'],
+  [9007,'Grijsaluminium','#908D8A'],[9010,'Zuiver wit','#F3F1EC'],[9011,'Grafiet zwart','#2E3032'],
+  [9016,'Verkeerswit','#EEEDE9'],[9017,'Verkeers zwart','#303132'],[9018,'Papyruswit','#DEE0DB'],
+  [9022,'Parel lichtgrijs','#9C9C9B'],[9023,'Parel donkergrijs','#7E7E7D']
 ];
 const FB_DB=[
   [239,"Wimborne White","#F4F2E7"],[2005,"All White","#F6F6F2"],[2003,"Pointing","#F3EFE3"],
@@ -2296,7 +2297,7 @@ function kopieelRAL(nr, naam) {
 }
 // ─────────────────────────────────────────────────────────
 initAccentSwatches();
-initAuth(); // start met auth check — laadProjecten() wordt aangeroepen vanuit toonApp()
+initAuth();
 // PWA Service Worker
 async function forceerVervers(e) {
   const btn = e.currentTarget;
